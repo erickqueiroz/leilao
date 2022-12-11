@@ -5,7 +5,7 @@ let dataInfoEnv = {
     infuraETH: "https://celo-alfajores.infura.io/v3/3ac68be0e4f44833bce00d483f3bd104",
     urlNetwork: "https://alfajores.celoscan.io/",
     redePadrao: "Celo Alfajores",
-    contrato: '0xe89080D4D451790ef348c5D0bbD5D8501c15d0E7',
+    contrato: '0xDfEDe0957C3417B18069a941f6a54cB9a09A4ec5',
     contratoLeilao: '0xB20350491f7562a8b708554d3956571c970c193a',
     gateway: "",
     owner: "0x94C4a3E8bfa74594249A8df7F0558Ce248c89bd5",
@@ -147,21 +147,21 @@ async function fetchAccountData() {
     const chainId = await web3.eth.getChainId();
     const chainData = await EvmChains.getChain(chainId);
 
-    if (chainData.chainId != 5) {
-        swal.fire({
-            title: '<strong>Atenção</strong>',
-            icon: 'warning',
-            html:
-                'Você está conectado na rede ' + chainData.name + ', por favor conecte a rede ' + dataInfoEnv.redePadrao + '.',
-            showCloseButton: false,
-            showConfirmButton: false,
-            showCancelButton: false,
-            focusConfirm: false,
-            allowOutsideClick: false,
-            footer: '<button class="btn btn-primary" onclick="changeNetwork(5)"><i class="fa fa-repeat"></i> ' + dataInfoEnv.redePadrao + '</button>'
-        })
-        return;
-    }
+    // if (chainData.chainId != 5) {
+    //     swal.fire({
+    //         title: '<strong>Atenção</strong>',
+    //         icon: 'warning',
+    //         html:
+    //             'Você está conectado na rede ' + chainData.name + ', por favor conecte a rede ' + dataInfoEnv.redePadrao + '.',
+    //         showCloseButton: false,
+    //         showConfirmButton: false,
+    //         showCancelButton: false,
+    //         focusConfirm: false,
+    //         allowOutsideClick: false,
+    //         footer: '<button class="btn btn-primary" onclick="changeNetwork(5)"><i class="fa fa-repeat"></i> ' + dataInfoEnv.redePadrao + '</button>'
+    //     })
+    //     return;
+    // }
 
     const accounts = await web3.eth.getAccounts();
 

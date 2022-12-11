@@ -20,5 +20,5 @@ Projeto voltado para disponibilização de um sistema de leilões na blockchain.
 --> https://leilao.mobiup.io/<br>
 
 ### Deploys
---> NFT à ser leiloado (https://alfajores.celoscan.io/address/0xe89080d4d451790ef348c5d0bbd5d8501c15d0e7)<br>
+--> NFT à ser leiloado (https://alfajores.celoscan.io/address/0xDfEDe0957C3417B18069a941f6a54cB9a09A4ec5)<br>
 --> Sistema de leilão (https://alfajores.celoscan.io/address/0xb20350491f7562a8b708554d3956571c970c193a)
