@@ -10,5 +10,5 @@ Projeto voltado para disponibilização de um sistema de leilões na blockchain.
 
 ### Smart Contracts
 --> Os smartcontracts estão na pasta scripts.<br>
---> O arquivo NFT.sol que depende do arquivo ERC721A.sol, que representa o ativo digital que poderá ser leiloado.
+--> O arquivo NFT.sol que depende do arquivo ERC721A.sol, que representa o ativo digital que poderá ser leiloado.<br>
 --> O arquivo Auction.sol representa o sistema de leilões na blockchain.
