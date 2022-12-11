@@ -1,0 +1,167 @@
+<?php if ($this->pageCount) : ?>
+<?php
+    $queryParams = '';
+    if (! empty($_GET)) {
+        $queryParams = '?' . http_build_query($_GET);
+    }
+    $action = isset($this->action) ? $this->action : null;
+?>
+    <nav>
+        <div class="nav-left" style="float: left;">
+            <?php printf(
+                'Página %s de %s. Exibindo registros de %s até %s de um total de %s registros.',
+                $this->current,
+                $this->pageCount,
+                $this->firstItemNumber,
+                $this->lastItemNumber,
+                $this->totalItemCount
+            ); ?>
+        </div>
+        <ul class="pagination pagination-rounded justify-content-end">
+
+            <!-- First page link -->
+            <?php if (isset($this->previous)) : ?>
+                <?php
+                    $firstParams = ['page' => $this->first];
+                    if ($action) {
+                        $firstParams['action'] = $action;
+                    }
+                ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="<?php echo $this->url($this->route, $firstParams); ?><?= $queryParams; ?>"
+                       aria-label="<?= $this->translate('First page'); ?>"
+                       title="<?= $this->translate('First page'); ?>"
+                    >
+                        <span aria-hidden="true"><?= $this->translate('First page'); ?></span>
+                        <span class="sr-only"><?= $this->translate('First page'); ?></span>
+                    </a>
+                </li>
+            <?php else : ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="javascript: void(0);"
+                       aria-label="<?= $this->translate('First page'); ?>"
+                       title="<?= $this->translate('First page'); ?>"
+                    >
+                        <span aria-hidden="true"><?= $this->translate('First page'); ?></span>
+                        <span class="sr-only"><?= $this->translate('First page'); ?></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Previous page link -->
+            <?php if (isset($this->previous)) : ?>
+                <?php
+                    $prevParams = ['page' => $this->previous];
+                    if ($action) {
+                        $prevParams['action'] = $action;
+                    }
+                ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="<?php echo $this->url($this->route, $prevParams); ?><?= $queryParams; ?>"
+                       aria-label="<?= $this->translate('Previous'); ?>"
+                       title="<?= $this->translate('Previous'); ?>"
+                    >
+                        <span aria-hidden="true">&larr;</span>
+                        <span class="sr-only"><?= $this->translate('Previous'); ?></span>
+                    </a>
+                </li>
+            <?php else : ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="javascript: void(0);"
+                       aria-label="<?= $this->translate('Previous'); ?>"
+                       title="<?= $this->translate('Previous'); ?>"
+                    >
+                        <span aria-hidden="true">&larr;</span>
+                        <span class="sr-only"><?= $this->translate('Previous'); ?></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Numbered page links -->
+            <?php foreach ($this->pagesInRange as $page) : ?>
+                <?php if ($page != $this->current) : ?>
+                    <?php
+                        $numberedParams = ['page' => $page];
+                        if ($action) {
+                            $numberedParams['action'] = $action;
+                        }
+                    ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?= $this->url($this->route, $numberedParams); ?><?= $queryParams; ?>">
+                            <?= $page; ?>
+                        </a>
+                    </li>
+                <?php else : ?>
+                    <li class="page-item active"><a class="page-link" href="javascript: void(0);"><?= $page; ?></a></li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <!-- Next page link -->
+            <?php if (isset($this->next)) : ?>
+                <?php
+                    $nextParams = ['page' => $this->next];
+                    if ($action) {
+                        $nextParams['action'] = $action;
+                    }
+                ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="<?= $this->url($this->route, $nextParams); ?><?= $queryParams; ?>"
+                       aria-label="<?= $this->translate('Next page'); ?>"
+                       title="<?= $this->translate('Next page'); ?>"
+                    >
+                        <span aria-hidden="true">&rarr;</span>
+                        <span class="sr-only"><?= $this->translate('Next page'); ?></span>
+                    </a>
+                </li>
+            <?php else : ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="javascript: void(0);"
+                       aria-label="<?= $this->translate('Next page'); ?>"
+                       title="<?= $this->translate('Next page'); ?>"
+                    >
+                        <span aria-hidden="true">&rarr;</span>
+                        <span class="sr-only"><?= $this->translate('Next page'); ?></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Last page link -->
+            <?php if (isset($this->next)) : ?>
+                <?php
+                    $lastParams = ['page' => $this->last];
+                    if ($action) {
+                        $lastParams['action'] = $action;
+                    }
+                ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="<?= $this->url($this->route, $lastParams); ?><?= $queryParams; ?>"
+                       aria-label="<?= $this->translate('Last page'); ?>"
+                       title="<?= $this->translate('Last page'); ?>"
+                    >
+                        <span aria-hidden="true"><?= $this->translate('Last page'); ?></span>
+                        <span class="sr-only"><?= $this->translate('Last page'); ?></span>
+                    </a>
+                </li>
+            <?php else : ?>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="javascript: void(0);"
+                       aria-label="<?= $this->translate('Last page'); ?>"
+                       title="<?= $this->translate('Last page'); ?>"
+                    >
+                        <span aria-hidden="true"><?= $this->translate('Last page'); ?></span>
+                        <span class="sr-only"><?= $this->translate('Last page'); ?></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+
+<?php endif;

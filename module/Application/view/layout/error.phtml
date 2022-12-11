@@ -1,0 +1,68 @@
+<?= $this->doctype() ?>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <?= $this->headTitle(\Application\Module::APPLICATION_NAME)
+            ->setSeparator(' - ')
+            ->setAutoEscape(false)
+        ?>
+
+        <?= $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+
+        <?= $this->headLink([
+            'rel' => 'shortcut icon',
+            'type' => 'image/vnd.microsoft.icon',
+            'href' => $this->s3Url('/images/favicon.ico')
+        ])
+           // ->prependStylesheet($this->s3Url('/css/app-site.css'))
+        ?>
+
+
+        <!-- CSS Mobile, resoluções abaixo de 1024px -->
+    <link href="<?= $this->s3Url('/css/app-site-mobile.css'); ?>" rel="stylesheet" type="text/css" media="screen and (max-width:1023px)">
+
+    <!-- CSS Computador, resolucoes acima de 1024px -->
+    <link href="<?= $this->s3Url('/css/app-site-pc.css'); ?>" rel="stylesheet" type="text/css" media="screen and (min-width:1024px)">
+
+    <link href="<?= $this->s3Url('/vendors/busy-load/app.min.css'); ?>" rel="stylesheet" type="text/css">
+
+    <!-- Main Script -->
+    <?= $this->headScript()
+        ->prependFile($this->s3Url('/js/vendor/sweet-alert.js'))
+        ->prependFile($this->s3Url('/js/jquery.mask.min.js'))
+        ->prependFile($this->s3Url('/js/vendor/jquery-3.4.1.min.js'))
+    ?>
+    </head>
+    
+    <body>
+        <header>
+            <center>
+                <img src="<?= $this->s3Url('/images/app-icone.png'); ?>" class="logo" />
+            </center>
+        </header>
+
+        <?= $this->partial('partials/flash-messages-site'); ?>
+        
+        <!-- Start Content-->
+        <article class="container">
+            <div class="loading"></div>
+            <div class="content" style="padding: 20px;">
+                <?= $this->content ?>
+            </div>
+        </article>
+        
+        <br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/>
+        <br/><br/><br/>
+
+        <!-- Scripts -->
+        <?= $this->inlineScript() ?>
+    </body>
+</html>

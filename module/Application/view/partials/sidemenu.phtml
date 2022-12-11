@@ -1,0 +1,19 @@
+<div class="left-side-menu">
+    <div class="slimscroll-menu">
+        <a href="#" class="logo text-center">
+            <span class="logo-lg">
+                <img src="/images/app-icone.png" alt="" height="130" class="embed-responsive">
+            </span>
+            <span class="logo-sm">
+                <img src="/images/app-icone.png" alt="" height="130" class="embed-responsive">
+            </span>
+        </a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<?php if (isset($this->activeMenu) && $this->activeMenu != '') : ?>
+    <script>
+        $('.<?= $this->activeMenu; ?>').addClass('active');
+    </script>
+<?php endif;

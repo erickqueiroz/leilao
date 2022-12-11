@@ -1,0 +1,2076 @@
+<style>
+    #map_vendas {
+        width: 100%;
+        height: 300px;
+    }
+
+    #map_dividas {
+        width: 100%;
+        height: 300px;
+    }
+     .accordion {
+         background-color: #eee;
+         color: #444;
+         cursor: pointer;
+         padding: 18px;
+         width: 100%;
+         border: none;
+         text-align: left;
+         outline: none;
+         font-size: 15px;
+         transition: 0.4s;
+     }
+    @import url(https://fonts.googleapis.com/css?family=Montserrat:400);
+
+    .chart-text {
+        font: 16px/1.4em "Montserrat", Arial, sans-serif;
+        fill: #000;
+        -moz-transform: translateY(0.25em);
+        -ms-transform: translateY(0.25em);
+        -webkit-transform: translate(-25px, -18px);
+        transform: translate(-25px, -18px);
+    }
+
+    .chart-number {
+        font-size: 0.6em;
+        line-height: 1;
+        text-anchor: middle;
+        -moz-transform: translateY(-0.25em);
+        -ms-transform: translateY(-0.25em);
+        -webkit-transform: translateY(-0.25em);
+        transform: translateY(-0.25em);
+    }
+
+    .chart-label {
+        font-size: 0.2em;
+        text-transform: uppercase;
+        text-anchor: middle;
+        -moz-transform: translateY(0.7em);
+        -ms-transform: translateY(0.7em);
+        -webkit-transform: translateY(0.7em);
+        transform: translateY(0.7em);
+    }
+</style>
+
+<script>
+    mesesCorrentes = JSON.parse('<?= $this->charts['sales']['meses']; ?>');
+    dataCorrentes = JSON.parse('<?= $this->charts['sales']['totais']; ?>');
+    mesesCorrentesDebt = JSON.parse('<?= $this->charts['debts']['meses']; ?>');
+    dataCorrentesDebt = JSON.parse('<?= $this->charts['debts']['totais']; ?>');
+    dataVendas = {
+        "type": "FeatureCollection",
+        "features": JSON.parse('<?= $this->heatmap['sales']; ?>')
+    };
+
+    dataDividas = {
+        "type": "FeatureCollection",
+        "features": JSON.parse('<?= $this->heatmap['debits']; ?>')
+    };
+    $('#stepSize').val('<?= $this->charts['stepSize']; ?>');
+</script>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <?= $this->render('partials/flash-messages'); ?>
+    </div>
+    <div class="col-6">
+        <div class="page-title-box">
+            <h4 class="page-title">Dashboard </h4>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="page-title-box">
+            <div class="row">
+                <div class="col-lg-4">
+                    <form action="" method="get" id="filtro_periodo" role="form">
+                        <br/>
+                        <div class="form-group mb-2">
+                            <input type="text" class="form-control datepicker" placeholder="Data Inicial"
+                                   value="<?= $this->inicio; ?>" name="inicio" id="inicio">
+                        </div>
+                </div>
+                <div class="col-lg-4">
+                    <br/>
+                    <div class="form-group mb-2">
+                        <input type="text" class="form-control datepicker" placeholder="Data final"
+                               value="<?= $this->fim; ?>" name="fim" id="fim">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <br/>
+                    <div class="form-group mb-2">
+                        <input type="submit" class="btn btn-secondary" value="Aplicar">
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<div class="row">
+    <div class="col-xl-12">
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-cellphone widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Customers">Clientes SIM</h5>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->registers['total']?></h3>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Este Mês</label>
+                                <h3 class="mt-3 mb-3"><?= $this->registers['this_month']?></h3>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Mês Anterior</label>
+                                <h3 class="mt-3 mb-3"><?= $this->registers['last_month']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->registers['percent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span title="Neste período: <?= $this->registers['this_month']; ?>. Período anterior: <?= $this->registers['last_month']; ?>.">
+                                <span class="text-<?= $color; ?> mr-2">
+                                    <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                    <?= number_format($this->registers['percent'], 2, '.', ''); ?>%
+                                </span>
+                                <span class="text-nowrap">
+                                    No período
+                                </span>
+                            </span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-cart widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">Vendas</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3">R$ <?= number_format($this->totalVendasAppSimPeriodo['totalVendasAppSim'], 2, ',', '.');?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3">R$ <?= number_format($this->totalVendasAppSimPeriodo['totalVendasAppSimPeriodo'], 2, ',', '.');?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalVendasAppSimPeriodo['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalVendasAppSimPeriodo['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-package-variant-closed widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Customers">Total Caixas PDV</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasPdvPeriodo['totalCaixasPdv']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasPdvPeriodo['totalCaixasPdvPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalCaixasPdvPeriodo['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalCaixasPdvPeriodo['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">
+                                No período
+                            </span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+        </div> <!-- end row -->
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-account  widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">Consumidores cadastrados</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->countConsumers['totalRegisters']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->countConsumers['totalRegistersPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->countConsumers['percent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->countConsumers['percent'],2,',','.'); ?>
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-cart widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Vendas Consumidor</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= number_format($this->totalVendasConsumerPeriodo['totalVendasConsumer'], 2, ',', '.');?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= number_format($this->totalVendasConsumerPeriodo['totalVendasConsumerPeriodo'], 2, ',', '.');?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalVendasConsumerPeriodo['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalVendasConsumerPeriodo['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-package-variant-closed widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Caixas Vendidas Consumidor</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodo['totalCaixasConsumer']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodo['totalCaixasConsumerPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalCaixasConsumerPeriodo['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalCaixasConsumerPeriodo['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+        </div> <!-- end row -->
+
+    </div> <!-- end col 14-> 17   17_>14-->
+</div>
+<div class="row">
+    <div class="col-xl-12">
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-account  widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">Consumidores cadastrados - BELÉM</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= number_format($this->countConsumersBelem['totalRegisters'], 2, '.', '');?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= number_format($this->countConsumersBelem['totalRegistersPeriodo'], 2, '.', '');?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->countConsumersBelem['percent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->countConsumersBelem['percent'],2,',','.'); ?>
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-cart widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Vendas Consumidor - BELÉM</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3">R$ <?= number_format($this->totalVendasConsumerPeriodoBelem['totalVendasConsumer'], 2, ',', '.');?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3">R$ <?= number_format($this->totalVendasConsumerPeriodoBelem['totalVendasConsumerPeriodo'], 2, ',', '.');?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalVendasConsumerPeriodoBelem['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalVendasConsumerPeriodoBelem['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-package-variant-closed widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Caixas Vendidas Consumidor - BELÉM</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodoBelem['totalCaixasConsumer']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodoBelem['totalCaixasConsumerPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalCaixasConsumerPeriodoBelem['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalCaixasConsumerPeriodoBelem['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+        </div> <!-- end row -->
+
+    </div> <!-- end col 14-> 17   17_>14-->
+</div>
+<div class="row">
+    <div class="col-xl-12">
+
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-account  widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">Consumidores cadastrados - MANAUS</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->countConsumersManaus['totalRegisters']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->countConsumersManaus['totalRegistersPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->countConsumersManaus['percent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->countConsumersManaus['percent'],2,',','.'); ?>
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-cart widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Vendas Consumidor - MANAUS</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3">R$<?= number_format($this->totalVendasConsumerPeriodoManaus['totalVendasConsumer'], 2, ',', '.');?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3">R$<?= number_format($this->totalVendasConsumerPeriodoManaus['totalVendasConsumerPeriodo'], 2, ',', '.');?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalVendasConsumerPeriodoManaus['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalVendasConsumerPeriodoManaus['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+            <div class="col-lg-4">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-right">
+                            <i class="mdi mdi-package-variant-closed widget-icon"></i>
+                        </div>
+                        <h5 class="text-muted font-weight-normal mt-0" title="Total Vendas Consumidor">Total Caixas Vendidas Consumidor - MANAUS</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Total</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodoManaus['totalCaixasConsumer']?></h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>No Período</label>
+                                <h3 class="mt-3 mb-3"><?= $this->totalCaixasConsumerPeriodoManaus['totalCaixasConsumerPeriodo']?></h3>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">
+                            <?php
+                            $direction = 'up';
+                            $color = 'success';
+                            if ($this->totalCaixasConsumerPeriodoManaus['salesPercent'] < 0) {
+                                $direction = 'down';
+                                $color = 'danger';
+                            }
+                            ?>
+                            <span class="text-<?= $color; ?> mr-2">
+                                <i class="mdi mdi-arrow-<?= $direction; ?>-bold"></i>
+                                <?= number_format($this->totalCaixasConsumerPeriodoManaus['salesPercent'], 2, '.', ''); ?>%
+                            </span>
+                            <span class="text-nowrap">No período</span>
+                        </p>
+                    </div> <!-- end card-body-->
+                </div> <!-- end card-->
+            </div> <!-- end col-->
+        </div> <!-- end row -->
+
+    </div> <!-- end col 14-> 17   17_>14-->
+</div>
+<div class="row">
+    <div id="divsvg" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Camada_1" x="0px" y="0px" viewBox="0 0 696.77 428.13" style="enable-background:new 0 0 696.77 428.13;" xml:space="preserve">
+            <style type="text/css">
+                .st0{fill:#FFE19F;}
+                .st1{fill:#8DCCBA;}
+                .st2{fill:#F4A8C1;}
+                .st3{fill:#DF3F66;}
+                .st4{fill:#FAB61C;}
+                .st5{fill:#40B282;}
+                .st6{fill:#9C9C9C;}
+                .st7{fill:#31383B;}
+                .st8{fill:#FFFFFF;}
+                .st9{fill:none;}
+                .st10{font-family:'Nunito';}
+                .st11{font-size:25.7438px;}
+                .st12{letter-spacing:5;}
+                .st13{font-family:'Nunito';}
+                .st14{font-size:17.3719px;}
+                .st15{font-size:14.371px;}
+                .st16{font-size:21.5389px;}
+                .st17{font-size:14.8565px;}
+                .st18{font-size:22.9741px;}
+                .st19{font-size:19.0704px;}
+                .st20{font-size:24.7441px;}
+                .st21{font-size:22.8022px;}
+            </style>
+            <rect x="453.01" y="161.14" class="st0" width="70.16" height="31.45"/>
+            <rect x="594.28" y="161.14" class="st1" width="70.16" height="31.45"/>
+            <rect x="31.68" y="161.14" class="st2" width="351.16" height="31.45"/>
+            <circle class="st3" cx="32.04" cy="79.88" r="27.08"/>
+            <circle class="st3" cx="385.11" cy="316.48" r="17.63"/>
+            <circle class="st4" cx="385.11" cy="359.14" r="17.63"/>
+            <circle class="st5" cx="385.11" cy="401.8" r="17.63"/>
+            <circle class="st3" cx="31.68" cy="176.86" r="15.72"/>
+            <circle class="st4" cx="452.13" cy="176.86" r="15.72"/>
+            <circle class="st4" cx="523.17" cy="176.86" r="15.72"/>
+            <circle class="st5" cx="592.03" cy="176.86" r="15.72"/>
+            <circle class="st5" cx="663.5" cy="176.86" r="15.72"/>
+            <ellipse class="st6" cx="632.11" cy="374.13" rx="31.83" ry="29.09"/>
+            <circle class="st3" cx="102.2" cy="79.88" r="27.08"/>
+            <circle class="st3" cx="172.36" cy="79.88" r="27.08"/>
+            <circle class="st3" cx="242.52" cy="79.88" r="27.08"/>
+            <circle class="st3" cx="312.69" cy="79.88" r="27.08"/>
+            <circle class="st3" cx="382.85" cy="79.88" r="27.08"/>
+            <circle class="st4" cx="453.01" cy="79.88" r="27.08"/>
+            <circle class="st4" cx="523.17" cy="79.88" r="27.08"/>
+            <circle class="st5" cx="593.34" cy="79.88" r="27.08"/>
+            <circle class="st5" cx="663.5" cy="79.88" r="27.08"/>
+            <path class="st7" d="M43.6,137.79H19.98c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08l23.62,0  c3.9,0,7.08,3.19,7.08,7.08v4.56C50.68,134.6,47.5,137.79,43.6,137.79z"/>
+            <path class="st7" d="M114.07,137.79H89.94c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h24.13  c3.9,0,7.08,3.19,7.08,7.08v4.56C121.15,134.6,117.97,137.79,114.07,137.79z"/>
+            <path class="st7" d="M186.97,137.79h-25.54c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h25.54  c3.9,0,7.08,3.19,7.08,7.08v4.56C194.05,134.6,190.86,137.79,186.97,137.79z"/>
+            <path class="st7" d="M254.49,137.79h-22.23c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h22.23  c3.9,0,7.08,3.19,7.08,7.08v4.56C261.58,134.6,258.39,137.79,254.49,137.79z"/>
+            <path class="st7" d="M324.96,137.79h-23.62c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h23.62  c3.9,0,7.08,3.19,7.08,7.08v4.56C332.05,134.6,328.86,137.79,324.96,137.79z"/>
+            <path class="st7" d="M390.73,137.79H371.3c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h19.43  c3.9,0,7.08,3.19,7.08,7.08v4.56C397.82,134.6,394.63,137.79,390.73,137.79z"/>
+            <path class="st7" d="M463.81,137.79h-23.57c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h23.57  c3.9,0,7.08,3.19,7.08,7.08v4.56C470.89,134.6,467.7,137.79,463.81,137.79z"/>
+            <path class="st7" d="M534.84,137.79h-22.6c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h22.6  c3.9,0,7.08,3.19,7.08,7.08v4.56C541.92,134.6,538.73,137.79,534.84,137.79z"/>
+            <path class="st7" d="M607.35,137.79h-23.96c-3.9,0-7.08-3.19-7.08-7.08v-4.56c0-3.9,3.19-7.08,7.08-7.08h23.96  c3.9,0,7.08,3.19,7.08,7.08v4.56C614.43,134.6,611.24,137.79,607.35,137.79z"/>
+            <path class="st7" d="M675.9,137.79h-18.88c-4.67,0-8.48-4.21-8.48-9.36v0c0-5.15,3.82-9.36,8.48-9.36h18.88  c4.67,0,8.48,4.22,8.48,9.37l0,0C684.39,133.58,680.57,137.79,675.9,137.79z"/>
+            <path class="st2" d="M325.89,332.08H213.35c-8.58,0-15.6-7.02-15.6-15.6v0c0-8.58,7.02-15.6,15.6-15.6h112.54  c8.58,0,15.6,7.02,15.6,15.6v0C341.49,325.06,334.47,332.08,325.89,332.08z"/>
+            <path class="st0" d="M326.59,374.74H214.05c-8.58,0-15.6-7.02-15.6-15.6v0c0-8.58,7.02-15.6,15.6-15.6h112.54  c8.58,0,15.6,7.02,15.6,15.6v0C342.19,367.72,335.17,374.74,326.59,374.74z"/>
+            <path class="st1" d="M326.59,417.58H214.05c-8.58,0-15.6-7.02-15.6-15.6v0c0-8.58,7.02-15.6,15.6-15.6h112.54  c8.58,0,15.6,7.02,15.6,15.6v0C342.19,410.56,335.17,417.58,326.59,417.58z"/>
+            <path class="st1" d="M500.4,417.6h-56c-8.9,0-16.2-7-16.2-15.6l0,0c0-8.6,7.3-15.6,16.2-15.6h56c8.9,0,16.2,7,16.2,15.6l0,0  C516.6,410.6,509.3,417.6,500.4,417.6z"/>
+            <path class="st0" d="M500.4,374.7h-56c-8.9,0-16.2-7-16.2-15.6l0,0c0-8.6,7.3-15.6,16.2-15.6h56c8.9,0,16.2,7,16.2,15.6l0,0  C516.6,367.7,509.3,374.7,500.4,374.7z"/>
+            <path class="st2" d="M 500.4 331.9 h -56 c -8.9 0 -16.2 -7 -16.2 -15.6 l 0 0 c 0 -8.6 7.3 -15.6 16.2 -15.6 h 56 c 8.9 0 16.2 7 16.2 15.6 l 0 0 C 516.6 324.9 509.3 331.9 500.4 331.9 Z"></path>
+            <path class="st6" d="M661.15,331.91h-64.1c-3.9,0-7.08-3.19-7.08-7.08v-17.04c0-3.9,3.19-7.08,7.08-7.08h64.1  c3.9,0,7.08,3.19,7.08,7.08v17.04C668.24,328.72,665.05,331.91,661.15,331.91z"/>
+            <circle class="st8" cx="22.55" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="41.06" cy="74.6" r="3.71"/>
+            <path class="st8" d="M43.37,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65s-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C36.4,85.22,40.47,87.54,43.37,91.61z"/>
+            <circle class="st8" cx="92.94" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="111.45" cy="74.6" r="3.71"/>
+            <path class="st8" d="M113.77,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65c-3.48,0-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C106.8,85.22,110.87,87.54,113.77,91.61z"/>
+            <circle class="st8" cx="163.34" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="181.85" cy="74.6" r="3.71"/>
+            <path class="st8" d="M184.16,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65s-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C177.2,85.22,181.26,87.54,184.16,91.61z"/>
+            <circle class="st8" cx="233.74" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="252.25" cy="74.6" r="3.71"/>
+            <path class="st8" d="M254.56,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65c-3.48,0-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C247.59,85.22,251.66,87.54,254.56,91.61z"/>
+            <circle class="st8" cx="304.13" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="322.64" cy="74.6" r="3.71"/>
+            <path class="st8" d="M324.96,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65s-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C317.99,85.22,322.06,87.54,324.96,91.61z"/>
+            <circle class="st8" cx="374.53" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="393.04" cy="74.6" r="3.71"/>
+            <path class="st8" d="M395.35,91.61l-2.9,2.32c-1.74-2.9-5.23-4.65-8.71-4.65s-6.39,1.74-8.13,4.65l-2.91-2.32  c2.32-4.06,6.97-6.39,11.03-6.39C388.39,85.22,392.45,87.54,395.35,91.61z"/>
+            <circle class="st8" cx="442.99" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="462.03" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="583.14" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="601.81" cy="74.6" r="3.71"/>
+            <path class="st8" d="M581.59,90.07l2.9-2.32c1.74,2.9,5.23,4.65,8.71,4.65c3.48,0,6.39-1.74,8.13-4.65l2.91,2.32  c-2.32,4.06-6.97,6.39-11.03,6.39C588.55,96.46,584.49,94.13,581.59,90.07z"/>
+            <circle class="st8" cx="654.16" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="672.83" cy="74.6" r="3.71"/>
+            <path class="st8" d="M652.61,90.07l2.9-2.32c1.74,2.9,5.23,4.65,8.71,4.65c3.48,0,6.39-1.74,8.13-4.65l2.91,2.32  c-2.32,4.06-6.97,6.39-11.03,6.39C659.58,96.46,655.51,94.13,652.61,90.07z"/>
+            <line class="st9" x1="23.63" y1="93.04" x2="20.73" y2="90.72"/>
+            <line class="st9" x1="43.37" y1="90.72" x2="40.47" y2="93.04"/>
+            <rect x="441.93" y="88.58" class="st8" width="20.8" height="3.53"/>
+            <circle class="st8" cx="513.65" cy="74.6" r="3.71"/>
+            <circle class="st8" cx="532.69" cy="74.6" r="3.71"/>
+            <rect x="512.6" y="88.58" class="st8" width="20.8" height="3.53"/>
+            <text transform="matrix(1 0 0 1 194.0492 269.1868)" class="st7 st10 st11">NPS =</text>
+            <text transform="matrix(1 0 0 1 220.6391 27.9661)" class="st7 st10 st11 st12">NET PROMOTER SCORE</text>
+            <text transform="matrix(1 0 0 1 269.6156 269.1868)" class="st5 st10 st11">%PROMOTERS</text>
+            <text transform="matrix(1 0 0 1 476.8148 269.1868)" class="st3 st10 st11">%DETRACTORS</text>
+            <text transform="matrix(1 0 0 1 461.2797 268.009)" class="st7 st10 st11">-</text>
+            <text transform="matrix(1 0 0 1 162.975 215.8059)" class="st7 st13 st14">DETRACTORS</text>
+            <text transform="matrix(1 0 0 1 457.0511 215.7044)" class="st7 st13 st15">PASSIVES </text>
+            <text transform="matrix(1 0 0 1 587.3402 215.927)" class="st7 st13 st15">PROMOTERS </text>
+            <text transform="matrix(1 0 0 1 213.2641 322.5911)" class="st7 st10 st16">detractors</text>
+            <text transform="matrix(1 0 0 1 608.3051 322.3879)" class="st7 st10 st16">total</text>
+            <text transform="matrix(1 0 0 1 212.184 365.2336)" class="st7 st10 st16">passives</text>
+            <text transform="matrix(1 0 0 1 213.4476 408.0579)" class="st7 st10 st16">promoters</text>
+            <text transform="matrix(1.0622 0 0 1 27.8842 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.1386 0 0 1 97.0643 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.1948 0 0 1 169.2235 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.3744 0 0 1 238.3578 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.3983 0 0 1 308.559 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.1726 0 0 1 376.7177 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.1765 0 0 1 447.8558 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.1166 0 0 1 520.0101 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1.3011 0 0 1 590.1898 132.4426)" class="st8 st10 st17">0</text>
+            <text transform="matrix(1 0 0 1 25.1 183.3294)" class="st8 st10 st18">1</text>
+            <circle class="st3" cx="102.2" cy="176.86" r="15.72"/>
+            <text transform="matrix(1 0 0 1 95.6215 183.3294)" class="st8 st10 st18">2</text>
+            <circle class="st3" cx="172.71" cy="176.86" r="15.72"/>
+            <text transform="matrix(1 0 0 1 166.1469 183.3294)" class="st8 st10 st18">3</text>
+            <circle class="st3" cx="241.77" cy="176.86" r="15.72"/>
+            <text transform="matrix(1 0 0 1 235.2074 183.3294)" class="st8 st10 st18">4</text>
+            <circle class="st3" cx="312.69" cy="176.86" r="15.72"/>
+            <text transform="matrix(1 0 0 1 306.1195 183.3294)" class="st8 st10 st18">5</text>
+            <circle class="st3" cx="382.85" cy="176.86" r="15.72"/>
+            <text transform="matrix(1 0 0 1 376.2543 183.3294)" class="st8 st10 st18">6</text>
+            <text transform="matrix(1 0 0 1 445.559 183.3294)" class="st8 st10 st18">7</text>
+            <text transform="matrix(1 0 0 1 516.5922 183.3294)" class="st8 st10 st18">8</text>
+            <text transform="matrix(1 0 0 1 585.4301 183.3294)" class="st8 st10 st18">9</text>
+            <text transform="matrix(1 0 0 1 653.8391 182.2628)" class="st8 st10 st19">10</text>
+            <text transform="matrix(1 0 0 1 375.7992 405.8235)" class="st8 st10 st14">0</text>
+            <text transform="matrix(1 0 0 1 615.182 381.1145)" class="st7 st10 st20">345</text>
+            <text transform="matrix(1 0 0 1 377.8187 363.1594)" class="st8 st10 st14">15</text>
+            <text transform="matrix(1 0 0 1 377.8187 320.5344)" class="st8 st10 st14">39</text>
+            <text transform="matrix(1 0 0 1 435.8109 322.7336)" class="st7 st10 st21">10 %</text>
+            <text transform="matrix(1 0 0 1 435.8109 365.5989)" class="st7 st10 st21">11 %</text>
+            <text transform="matrix(1 0 0 1 435.8109 408.425)" class="st7 st10 st21">12 %</text>
+            <text transform="matrix(1.4348 0 0 1 655.1556 132.3699)" class="st8 st10 st17">0</text>
+        </svg>
+    </div>
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-5">
+                <div class="card widget-flat">
+                    <div id="npsSim"></div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card widget-flat">
+                    <div id="npsConsumer"></div>
+                </div>
+            </div>
+            <div class="col-lg-1"></div>
+        </div>
+    </div>
+</div>
+<!-- end row -->
+
+<!--<div class="row">-->
+<!--    <div class="col-xl-6">-->
+<!--        <div class="card">-->
+<!--            <div class="card-body">-->
+<!--                <h4 class="header-title">Vendas por região no período</h4>-->
+<!--                <div class="mb-4 mt-4">-->
+<!--                    <div id='map_vendas'></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-xl-6">-->
+<!--        <div class="card">-->
+<!--            <div class="card-body">-->
+<!--                <h4 class="header-title">Pagamentos de dívidas por região no período</h4>-->
+<!--                <div class="mb-4 mt-4">-->
+<!--                    <div id="map_dividas"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="row" id="carrinhos" style="display: none">
+
+</div>
+
+<div class="row" id="ultimasVendas">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-2">
+                    ÚLTIMAS VENDAS <small>exibindo as últimos 30 operações</small>
+                </h4>
+                <div data-simplebar="init" style="max-height: 430px; width: 100%;">
+                    <div class="simplebar-wrapper" style="margin: 0px;">
+                        <div class="simplebar-height-auto-observer-wrapper">
+                            <div class="simplebar-height-auto-observer"></div>
+                        </div>
+                        <div class="simplebar-mask">
+                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                <div class="simplebar-content-wrapper" style="padding: 0px;">
+                                    <div class="simplebar-content" style="padding: 0px;">
+                                        <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                                            <div class="timeline-alt pb-0" tag="div">
+                                                <?php
+                                                foreach ($this->lista_de_vendas as $item => $value) {
+                                                    $retornoAPI = json_decode($value['resposta_api'], true);
+                                                    ?>
+                                                    <div class="timeline-item" tag="div">
+                                                        <img class="timeline-icon" src="<?=$this->s3Url("/images/icon-".$value['canal'].".png");?>"  width="25"/>
+                                                        <div class="timeline-item-info">
+                                                            <a href="/" class="text-secondary font-weight-bold mb-1 d-block"
+                                                               data-toggle="modal"
+                                                               data-target="#full-width-modal_1<?= $item; ?>">
+                                                                <?=$value['nome']?> - Valor Pedido: R$ <?=number_format($value['valor'], 2, ',', '.')?>
+                                                                -
+                                                                <small>
+                                                                    PDV: <?=$value['id_cliente']?> |
+                                                                    SETOR: <?=$value['setor']?> |
+                                                                    CPF/CNPJ: <?=$value['cnpj']?> |
+                                                                    Forma de Pagamento: <?=$value['forma_pagamento']?>
+                                                                </small>
+                                                            </a>
+                                                            <p class="mb-0 pb-2"><small class="text-muted"><?=$value['data_pedido']?></small></p>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div id="full-width-modal_1<?php echo $item ?>" class="modal fade" tabindex="-1"
+                                                         role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-full-width">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title" id="fullWidthModalLabel">
+                                                                        Dados Pedido</h4>
+                                                                    <button type="button" class="close" data-dismiss="modal"
+                                                                            aria-hidden="true">×
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-8">
+                                                                            <h6>Itens do Pedido</h6>
+
+
+                                                                            <table class="mb-0 table table-striped">
+                                                                                <thead>
+                                                                                <tr>
+                                                                                    <th>#</th>
+                                                                                    <th>Produto</th>
+                                                                                    <th>Cód. Preço</th>
+                                                                                    <th>Preço Unit.</th>
+                                                                                    <th>Qtde.</th>
+                                                                                    <th>Valor Tot.</th>
+                                                                                </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                <?php
+                                                                                foreach ($value['itens'] as $i => $v) {
+                                                                                    echo '
+                                                                                    <tr>
+                                                                                        <th scope="row">'.$v['id_item'].'</th>
+                                                                                        <td>'.$v['codigo_produto'].' - '.$v['produto'].'</td>
+                                                                                        <td>'.$v['id_preco'].'</td>
+                                                                                        <td>'.number_format($v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                        <td>'.number_format($v['qtde'], 2, ',', '.').'</td>
+                                                                                        <td>'.number_format($v['qtde'] * $v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                    </tr>
+                                                                                    ';
+                                                                                }
+                                                                                ?>
+                                                                                </tbody>
+                                                                            </table>
+
+
+                                                                        </div>
+
+                                                                        <div class="col-lg-4">
+
+                                                                            <h6>Retorno SAP</h6>
+                                                                            <strong>Message: </strong><?= $retornoAPI['message']; ?>
+                                                                            <br>
+                                                                            <strong>Number: </strong><?= $retornoAPI['number']; ?>
+                                                                            <br>
+                                                                            <strong>Type: </strong><?= $retornoAPI['type']; ?>
+                                                                            <br>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                            data-dismiss="modal">
+                                                                        Fechar
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="simplebar-placeholder" style="width: auto; height: 600px;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                        <div class="simplebar-scrollbar" style="height: 308px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-2">
+                    ÚLTIMAS VENDAS CONSUMIDOR MANAUS <small>exibindo as últimas 30 operações</small>
+                </h4>
+                <div data-simplebar="init" style="max-height: 430px; width: 100%;">
+                    <div class="simplebar-wrapper" style="margin: 0px;">
+                        <div class="simplebar-height-auto-observer-wrapper">
+                            <div class="simplebar-height-auto-observer"></div>
+                        </div>
+                        <div class="simplebar-mask">
+                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                <div class="simplebar-content-wrapper" style="padding: 0px;">
+                                    <div class="simplebar-content" style="padding: 0px;">
+                                        <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                                            <div class="timeline-alt pb-0" tag="div">
+                                                <?php if(count($this->lista_de_vendas_consumer_manaus) == 0):?>
+                                                    Nenhum pedido encontrado no período ou pedidos sem itens
+                                                <?php else: ?>
+                                                <?php foreach ($this->lista_de_vendas_consumer_manaus as $item => $value):
+                                                    $classePedidoCancelado = '';
+                                                    $envioAPI = json_decode($value['envio_api'],true);
+                                                    $retornoAPI = json_decode($value['resposta_api'], true);
+                                                    if ($value['message_api_gs_lab'] == 'NOK') {
+                                                        $classePedidoCancelado   = "text-danger";
+                                                    }
+                                                ?>
+                                                <div class="timeline-item" tag="div">
+                                                    <img class="timeline-icon" src="<?=$this->s3Url("/images/icon-".$value['canal'].".png");?>"  width="25"/>
+                                                    <div class="timeline-item-info">
+                                                        <a href="/" class="text-secondary font-weight-bold mb-1 d-block <?=$classePedidoCancelado?>"
+                                                           data-toggle="modal"
+                                                           data-target="#full-width-modal_1<?= $item; ?>">
+                                                            <?=$value['nome']?> - Valor Pedido: R$ <?=number_format($value['valor'], 2, ',', '.')?>
+                                                            -
+                                                            <small class="<?=$classePedidoCancelado?>">
+                                                                PDV: <?=$value['id_cliente']?> |
+                                                                SETOR: <?=$value['setor']?> |
+                                                                CPF/CNPJ: <?=$value['cnpj']?> |
+                                                                Forma de Pagamento: Cartão de crédito |
+                                                                <?=$value['message_api_gs_lab']?>
+                                                            </small>
+                                                        </a>
+                                                        <p class="mb-0 pb-2"><small class="text-muted <?=$classePedidoCancelado?>"><?=$value['data_pedido']?></small></p>
+                                                    </div>
+                                                </div>
+
+
+                                                <div id="full-width-modal_1<?php echo $item ?>" class="modal fade" tabindex="-1"
+                                                     role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-full-width">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title" id="fullWidthModalLabel">
+                                                                    Dados Pedido</h4>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                        aria-hidden="true">×
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-lg-8">
+                                                                        <h6>Itens do Pedido</h6>
+
+
+                                                                        <table class="mb-0 table table-striped">
+                                                                            <thead>
+                                                                            <tr>
+                                                                                <th>#</th>
+                                                                                <th>Produto</th>
+                                                                                <th>Cód. Preço</th>
+                                                                                <th>Preço Unit.</th>
+                                                                                <th>Qtde.</th>
+                                                                                <th>Valor Tot.</th>
+                                                                            </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            <?php
+                                                                            foreach ($value['itens'] as $i => $v) {
+                                                                                echo '
+                                                                                        <tr>
+                                                                                            <th scope="row">'.$v['id_item'].'</th>
+                                                                                            <td>'.$v['codigo_produto'].' - '.$v['produto'].'</td>
+                                                                                            <td>'.$v['id_preco'].'</td>
+                                                                                            <td>'.number_format($v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                            <td>'.number_format($v['qtde'], 2, ',', '.').'</td>
+                                                                                            <td>'.number_format($v['qtde'] * $v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                        </tr>
+                                                                                        ';
+                                                                            }
+                                                                            ?>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+
+                                                                    <div class="col-lg-4">
+                                                                        <h6>Retorno SAP</h6>
+                                                                        <strong>Message: </strong><?= (isset($value['message_api_gs']) && $value['message_api_gs'] != null) ? $value['message_api_gs'] :''; ?>
+                                                                        <br>
+                                                                        <h6>Tracking</h6>
+                                                                        <strong>Status: </strong><?= isset($value['tracking']) ? $value['tracking'] :''; ?>
+                                                                        <br>
+
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-lg-6">
+                                                                            <h6>Dados da Entrega</h6>
+                                                                            <table class="mb-0 table">
+                                                                                <tr>
+                                                                                    <td><strong>Cep</strong></td>
+                                                                                    <td><?=$value['cep']?></td>
+                                                                                    <td><strong>Estado</strong></td>
+                                                                                    <td><?=$value['estado']?></td>
+                                                                                    <td><strong>Cidade</strong></td>
+                                                                                    <td><?=$value['cidade']?></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Bairro</strong></td>
+                                                                                    <td><?=$value['bairro']?></td>
+                                                                                    <td><strong>Rua</strong></td>
+                                                                                    <td><?=$value['rua']?>, <?=$value['numero']?></td>
+                                                                                    <td><strong>Domicilo Fiscal</strong></td>
+                                                                                    <td><?=$value['domicilioFiscal']?></td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </div>
+
+                                                                        <div class="col-lg-6">
+                                                                            <h6>Dados do Pagamento</h6>
+                                                                            <table class="mb-0 table">
+                                                                                <tr>
+                                                                                    <td><strong>Nª Ordem</strong></td>
+                                                                                    <td><?=$value['ordem']?></td>
+                                                                                    <td><strong>Valor </strong></td>
+                                                                                    <td><?="R$ ".number_format($value['valor'],2, ',', '.')?></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>Status</strong></td>
+                                                                                    <td><?=$value['status']?></td>
+                                                                                    <td><strong>tipo</strong></td>
+                                                                                    <td><?=$value['tipo']?></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><strong>NSU</strong></td>
+                                                                                    <td><?php echo isset($envioAPI['nsu']) ? $envioAPI['nsu'] : '';?></td>
+                                                                                    <td><strong>Bandeira</strong></td>
+                                                                                    <td><?=ucfirst($envioAPI['operadora'])?></td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">
+                                                                    Fechar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?php endforeach;?>
+                                                <?php endif;?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="simplebar-placeholder" style="width: auto; height: 600px;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                        <div class="simplebar-scrollbar" style="height: 308px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-2">
+                    ÚLTIMAS VENDAS CONSUMIDOR BELÉM <small>exibindo as últimas 30 operações</small>
+                </h4>
+                <div data-simplebar="init" style="max-height: 430px; width: 100%;">
+                    <div class="simplebar-wrapper" style="margin: 0px;">
+                        <div class="simplebar-height-auto-observer-wrapper">
+                            <div class="simplebar-height-auto-observer"></div>
+                        </div>
+                        <div class="simplebar-mask">
+                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                <div class="simplebar-content-wrapper" style="padding: 0px;">
+                                    <div class="simplebar-content" style="padding: 0px;">
+                                        <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                                            <div class="timeline-alt pb-0" tag="div">
+                                                <?php if(count($this->lista_de_vendas_consumer_belem) == 0):?>
+                                                    Nenhum pedido encontrado no período ou pedidos sem itens
+                                                <?php else: ?>
+                                                <?php foreach ($this->lista_de_vendas_consumer_belem as $item => $value):
+                                                $classePedidoCancelado = '';
+                                                $envioAPI = json_decode($value['envio_api'],true);
+                                                $retornoAPI = json_decode($value['resposta_api'], true);
+                                                if ($value['message_api_gs_lab'] == 'NOK') {
+                                                    $classePedidoCancelado   = "text-danger";
+                                                }
+                                                ?>
+                                                    <div class="timeline-item" tag="div">
+                                                        <img class="timeline-icon" src="<?=$this->s3Url("/images/icon-".$value['canal'].".png");?>"  width="25"/>
+                                                        <div class="timeline-item-info">
+                                                            <a href="/" class="text-secondary font-weight-bold mb-1 d-block <?=$classePedidoCancelado?>"
+                                                               data-toggle="modal"
+                                                               data-target="#full-width-modal_1<?= $item; ?>">
+                                                                <?=$value['nome']?> - Valor Pedido: R$ <?=number_format($value['valor'], 2, ',', '.')?>
+                                                                -
+                                                                <small class="<?=$classePedidoCancelado?>">
+                                                                    PDV: <?=$value['id_cliente']?> |
+                                                                    SETOR: <?=$value['setor']?> |
+                                                                    CPF/CNPJ: <?=$value['cnpj']?> |
+                                                                    Forma de Pagamento: Cartão de crédito |
+                                                                    <?=$value['message_api_gs_lab']?>
+                                                                </small>
+                                                            </a>
+                                                            <p class="mb-0 pb-2"><small class="text-muted <?=$classePedidoCancelado?>"><?=$value['data_pedido']?></small></p>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div id="full-width-modal_1<?php echo $item ?>" class="modal fade" tabindex="-1"
+                                                         role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-full-width">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title" id="fullWidthModalLabel">
+                                                                        Dados Pedido</h4>
+                                                                    <button type="button" class="close" data-dismiss="modal"
+                                                                            aria-hidden="true">×
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-8">
+                                                                            <h6>Itens do Pedido</h6>
+
+
+                                                                            <table class="mb-0 table table-striped">
+                                                                                <thead>
+                                                                                <tr>
+                                                                                    <th>#</th>
+                                                                                    <th>Produto</th>
+                                                                                    <th>Cód. Preço</th>
+                                                                                    <th>Preço Unit.</th>
+                                                                                    <th>Qtde.</th>
+                                                                                    <th>Valor Tot.</th>
+                                                                                </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                <?php
+                                                                                foreach ($value['itens'] as $i => $v) {
+                                                                                    echo '
+                                                                                        <tr>
+                                                                                            <th scope="row">'.$v['id_item'].'</th>
+                                                                                            <td>'.$v['codigo_produto'].' - '.$v['produto'].'</td>
+                                                                                            <td>'.$v['id_preco'].'</td>
+                                                                                            <td>'.number_format($v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                            <td>'.number_format($v['qtde'], 2, ',', '.').'</td>
+                                                                                            <td>'.number_format($v['qtde'] * $v['valor_unitario'], 2, ',', '.').'</td>
+                                                                                        </tr>
+                                                                                        ';
+                                                                                }
+                                                                                ?>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+
+                                                                        <div class="col-lg-4">
+                                                                            <h6>Retorno SAP</h6>
+                                                                            <strong>Message: </strong><?= (isset($value['message_api_gs']) && $value['message_api_gs'] != null) ? $value['message_api_gs'] :''; ?>
+                                                                            <br>
+                                                                            <h6>Tracking</h6>
+                                                                            <strong>Status: </strong><?= isset($value['tracking']) ? $value['tracking'] :''; ?>
+                                                                            <br>
+
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-lg-6">
+                                                                                <h6>Dados da Entrega</h6>
+                                                                                <table class="mb-0 table">
+                                                                                    <tr>
+                                                                                        <td><strong>Cep</strong></td>
+                                                                                        <td><?=$value['cep']?></td>
+                                                                                        <td><strong>Estado</strong></td>
+                                                                                        <td><?=$value['estado']?></td>
+                                                                                        <td><strong>Cidade</strong></td>
+                                                                                        <td><?=$value['cidade']?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td><strong>Bairro</strong></td>
+                                                                                        <td><?=$value['bairro']?></td>
+                                                                                        <td><strong>Rua</strong></td>
+                                                                                        <td><?=$value['rua']?>, <?=$value['numero']?></td>
+                                                                                        <td><strong>Domicilo Fiscal</strong></td>
+                                                                                        <td><?=$value['domicilioFiscal']?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+
+                                                                            <div class="col-lg-6">
+                                                                                <h6>Dados da Pagamento</h6>
+                                                                                <table class="mb-0 table">
+                                                                                    <tr>
+                                                                                        <td><strong>Nª Ordem</strong></td>
+                                                                                        <td><?=$value['ordem']?></td>
+                                                                                        <td><strong>Valor </strong></td>
+                                                                                        <td><?="R$ ".number_format($value['valor'],2, ',', '.')?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td><strong>Status</strong></td>
+                                                                                        <td><?=$value['status']?></td>
+                                                                                        <td><strong>tipo</strong></td>
+                                                                                        <td><?=$value['tipo']?></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td><strong>NSU</strong></td>
+                                                                                        <td><?=isset($envioAPI['nsu']) ? $envioAPI['nsu'] : ''?></td>
+                                                                                        <td><strong>Bandeira</strong></td>
+                                                                                        <td><?=isset($envioAPI['operadora']) ? ucfirst($envioAPI['operadora']) : ''?></td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                            data-dismiss="modal">
+                                                                        Fechar
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <?php endforeach;?>
+                                                <?php endif;?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="simplebar-placeholder" style="width: auto; height: 600px;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                    </div>
+                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                        <div class="simplebar-scrollbar" style="height: 308px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4 class="header-title mb-2">
+                            Listagem de Pedidos <small>Exibindo as 30 operações mais recentes</small>
+                        </h4>
+                        <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                            <div class="timeline-alt pb-0">
+                                <?php if (count($this->list_orders) > 0) : ?>
+                                    <?php foreach ($this->list_orders as $key => $item) : ?>
+                                        <div class="timeline-item">
+                                            <img src="<?= $this->s3Url('/images/icon-' . $item['canal'] . '.png'); ?>"
+                                                 class="timeline-icon"
+                                                 title="Origem: <?= $item['canal']; ?>">
+                                            <?php
+                                            $title = 'Pedido';
+                                            $icon = 'dripicons-cross';
+
+                                            $realizadoPagamento = 'Boleto';
+                                            if (isset($item['send_parameters']) && isset($item['response_parameters'])) {
+                                                $realizadoPagamento = 'Cartão de crédito';
+
+                                                if ($item['response_parameters']['TYPE'] == \SAP\ReceberVendaCartao\ReceberVendaCartaoResponse::TYPE_SUCCESS
+                                                && isset($item['dados_pagamento']['captura']) && $item['dados_pagamento']['captura']['status'] == 'CONFIRMED') {
+                                                    $realizadoPagamento .= ' - OK';
+                                                } else {
+                                                    $realizadoPagamento .= ' - NOK';
+                                                }
+                                            }
+                                            ?>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-secondary font-weight-bold mb-1 d-block"
+                                                   data-toggle="modal" title="<?= $title; ?>"
+                                                   data-target="#full-width-modal_1<?= $key; ?>">
+                                                    &nbsp;<?= $item['nome'] ?> - Valor
+                                                    pedido: <?= "R$ ".number_format($item['valor_pedido'],2, ',', '.'); ?>
+                                                    -&nbsp;
+                                                    <small>
+                                                        <small>
+                                                            PDV: <?= $item['client_id']; ?> |
+                                                            SETOR: <?= $item['sector']; ?> |
+                                                            CPF/CNPJ: <?= $item['cnpj']; ?> |
+                                                            Forma de pagamento: <?= $realizadoPagamento; ?>
+                                                        </small>
+                                                    </small>
+                                                </a>
+                                                <p>
+                                                    <small class="text-muted"><?= $item['data_pedido'] ?></small>
+                                                </p>
+                                                <br/>
+                                            </div>
+                                        </div>
+
+                                        <div id="full-width-modal_1<?php echo $key ?>" class="modal fade" tabindex="-1"
+                                             role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-full-width">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title" id="fullWidthModalLabel">
+                                                            Dados Pedido</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-hidden="true">×
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <h6>Itens do Pedido</h6>
+                                                                <table class="table table-bordered">
+                                                                    <?php foreach ($item['DadosPedido'] as $keyPar => $itemPar) : ?>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <button class="accordion">
+                                                                                    <?= isset($itemPar['nome_produto']) ? $itemPar['nome_produto'] : 'Produto ' . ($keyPar + 1) ?>
+                                                                                    - Ver detalhes
+                                                                                </button>
+                                                                                <div class="panel" style="display: none;">
+                                                                                    <?php foreach ($itemPar as $key => $value) : ?>
+                                                                                        <strong><?= $key; ?></strong>: <?= $value; ?>
+                                                                                        <br/>
+                                                                                    <?php endforeach; ?>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    <?php endforeach; ?>
+                                                                </table>
+                                                            </div>
+
+                                                            <div class="col-lg-6">
+                                                                <h6>Retorno SAP</h6>
+                                                                <strong>Message: </strong><?= $item['response']['message']; ?>
+                                                                <br>
+                                                                <strong>Number: </strong><?= $item['response']['number']; ?>
+                                                                <br>
+                                                                <strong>Type: </strong><?= $item['response']['type']; ?>
+                                                                <br>
+                                                            </div>
+                                                        </div>
+                                                        <?php if (
+                                                                isset($item['send_parameters']) && ! empty($item['send_parameters'])
+                                                                && isset($item['response_parameters']) && ! empty($item['response_parameters'])
+                                                        ): ?>
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <h5>Detalhes do pagamento</h5>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <h6>Enviado</h6>
+                                                                <table class="table table-striped table-sm" style="width: 100%;">
+                                                                    <?php foreach ($item['send_parameters'] as $sendKey => $value) : ?>
+                                                                        <tr>
+                                                                            <td><?= $sendKey; ?></td>
+                                                                            <td><?= $value; ?></td>
+                                                                        </tr>
+                                                                    <?php endforeach; ?>
+                                                                </table>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <h6>Recebido</h6>
+                                                                <table class="table table-striped table-sm">
+                                                                    <?php foreach ($item['response_parameters'] as $responseKey => $value) : ?>
+                                                                        <tr>
+                                                                            <td><?= $responseKey; ?></td>
+                                                                            <td><?= $value; ?></td>
+                                                                        </tr>
+                                                                    <?php endforeach; ?>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">
+                                                            Fechar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <small>Não existem registros a exibir</small>
+                                <?php endif; ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<?php $icons = ['carteira', 'pos', 'telsel']; ?>
+<?php $origins = ['Carteira', 'POS', 'TelSel']; ?>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4 class="header-title">Pagamentos de vendas <small>Exibindo as 30 operações mais recentes</small></h4>
+                <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                    <div class="timeline-alt pb-0">
+                        <?php if ($this->list_sales > 0) : ?>
+                            <?php $formatar = ['valor_cheio', 'valor_pago', 'valor_pedido', 'saldo_a_utilizar', 'saldo_remanescente']; ?>
+                            <?php foreach ($this->list_sales as $key => $item) : ?>
+                                <div class="timeline-item">
+                                    <img src="<?= $this->s3Url('/images/icon-' . $item['origin'] . '.png'); ?>" class="timeline-icon"
+                                         title="Origem: <?= $item['origin']; ?>">
+                                    <div class="timeline-item-info">
+                                        <?php
+                                        $title = 'Pagamento com erro';
+                                        $icon = 'dripicons-cross';
+                                        $status = 'NOK';
+
+                                        if ($item['status_response']) {
+                                            $title = 'Pagamento Ok';
+                                            $icon = 'dripicons-checkmark';
+                                            $status = 'OK';
+                                        }
+                                        ?>
+                                        <a href="#" class="text-secondary font-weight-bold mb-1 d-block"
+                                           data-toggle="modal" title="<?= $title; ?>"
+                                           data-target="#full-width-modal_1<?= $item['send']['nsu']; ?>">
+                                            <?= $item['client'] ?> - <?= $item['send']['valor_pago_format'] ?>
+                                            <?php if (isset($item['extra_params']['method'])
+                                                && $item['extra_params']['method'] == 'internal'
+                                                && isset($item['send']['saldo_a_utilizar'])) : ?>
+                                                &nbsp;(Saldo utilizado: <?= formatMoney($item['send']['saldo_a_utilizar']); ?>)
+                                            <?php endif; ?>
+                                            <small>
+                                                <small>
+                                                    PDV: <?= $item['pdv']; ?> |
+                                                    CPF/CNPJ: <?= $item['cnpj']; ?> |
+                                                    Setor: <?= $item['sector']; ?> |&nbsp;
+                                                    Status: <strong><?= $status; ?></strong>
+                                                </small>
+                                            </small>
+                                        </a>
+                                        <p>
+                                            <small class="text-muted"><?= $item['created_at'] ?></small>
+                                        </p>
+                                        <br/>
+                                    </div>
+                                </div>
+
+                                <!-- Full width modal content -->
+                                <div id="full-width-modal_1<?= $item['send']['nsu']; ?>" class="modal fade"
+                                     tabindex="-1"
+                                     role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-full-width">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="fullWidthModalLabel">
+                                                    Cliente: <?= $item['client'] ?> | Origem do
+                                                    pagamento: <?= $item['origin']; ?></h4>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">×
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <h6>Parâmetros enviados ao SAP</h6>
+                                                        <?php
+                                                        $total = count($item['send']);
+                                                        $half = ($total / 2) + 3;
+                                                        $current = 1;
+                                                        ?>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <?php foreach ($item['send'] as $keyPar => $itemPar) : ?>
+                                                                <?php if ($current <= $half) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td>
+                                                                            <?php if (in_array($keyPar, $formatar)) : ?>
+                                                                                <?php $itemPar = formatMoney($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?= $itemPar ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php endif; ?>
+                                                                <?php $current++; ?>
+                                                            <?php endforeach; ?>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <h6>&nbsp;</h6>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <?php $current = 1; ?>
+                                                            <?php foreach ($item['send'] as $keyPar => $itemPar) : ?>
+                                                                <?php if ($current > $half) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td>
+                                                                            <?php if (in_array($keyPar, $formatar)) : ?>
+                                                                                <?php $itemPar = formatMoney($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?= $itemPar; ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php endif; ?>
+                                                                <?php $current++; ?>
+                                                            <?php endforeach; ?>
+                                                            <?php if (count($item['extra_params']) > 0) : ?>
+                                                                <?php foreach ($item['extra_params'] as $keyPar => $itemPar) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td><?= $itemPar ?></td>
+                                                                    </tr>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <h6>Retorno do SAP</h6>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <tr>
+                                                                <?php foreach ($item['response'] as $keyPar => $itemPar) : ?>
+                                                            <tr>
+                                                                <td><strong><?= $keyPar ?></strong></td>
+                                                                <td><?= $itemPar ?></td>
+                                                            </tr>
+                                                            <?php endforeach; ?>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">
+                                                    Fechar
+                                                </button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <small>Não existem registros a exibir</small>
+                        <?php endif; ?>
+
+                    </div>
+                    <!-- end timeline -->
+                </div> <!-- end slimscroll -->
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4 class="header-title mb-2">
+                    Pagamento de dívidas <small>Exibindo as 30 operações mais recentes</small>
+                </h4>
+                <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                    <div class="timeline-alt pb-0">
+                        <?php if ($this->list_debits > 0) : ?>
+                            <?php $formatar = ['valor_pago', 'valor_juros', 'valor_multa', 'outras_despesas', 'valor_descontos', 'valor_liquido', 'valor_parcelas']; ?>
+                            <?php foreach ($this->list_debits as $key => $item) : ?>
+                                <div class="timeline-item">
+                                    <img src="<?= $this->s3Url('/images/icon-' . $item['origin'] . '.png'); ?>" class="timeline-icon"
+                                         title="Origem: <?= $item['origin']; ?>">
+                                    <?php
+                                    $title = 'Pagamento com erro';
+                                    $icon = 'dripicons-cross';
+                                    $color = 'style="color: red;"';
+                                    $status = 'NOK';
+
+                                    if ($item['status_response']) {
+                                        $title = 'Pagamento Ok';
+                                        $icon = 'dripicons-checkmark';
+                                        $color = '';
+                                        $status = 'OK';
+                                    }
+                                    ?>
+                                    <div class="timeline-item-info">
+                                        <a href="#" class="text-secondary font-weight-bold mb-1 d-block"
+                                           data-toggle="modal" title="<?= $title; ?>"
+                                           data-target="#full-width-modal_<?= str_replace('.', '-', $item['send']['id_divida']); ?>">
+                                            &nbsp;<?= $item['client'] ?> -
+                                            Líquido: <?= $item['send']['valor_pago_format']; ?>
+                                            <?php if (isset($item['send']['valor_liquido'])) : ?>
+                                                Pago: <?= formatMoney($item['send']['valor_liquido']); ?>
+                                            <?php endif; ?> -&nbsp;
+                                            <small>
+                                                <small>
+                                                    PDV: <?= $item['pdv']; ?> |
+                                                    CPF/CNPJ: <?= $item['cnpj']; ?> |
+                                                    Setor: <?= $item['sector']; ?> |&nbsp;
+                                                    Status: <strong><?= $status; ?></strong>
+                                                </small>
+                                            </small>
+                                        </a>
+                                        <p>
+                                            <small class="text-muted"><?= $item['created_at'] ?></small>
+                                        </p>
+                                        <br/>
+                                    </div>
+                                </div>
+
+                                <!-- Full width modal content -->
+                                <div id="full-width-modal_<?= str_replace('.', '-', $item['send']['id_divida']); ?>"
+                                     class="modal fade"
+                                     tabindex="-1"
+                                     role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-full-width">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="fullWidthModalLabel">
+                                                    Cliente: <?= $item['client'] ?> | Origem do
+                                                    pagamento: <?= $item['origin']; ?></h4>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-hidden="true">×
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <h6>Parâmetros enviados ao SAP</h6>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <?php
+                                                            $total = count($item['send']);
+                                                            $half = ($total / 2) + 3;
+                                                            $current = 1;
+                                                            ?>
+                                                            <?php foreach ($item['send'] as $keyPar => $itemPar) : ?>
+                                                                <?php if ($current <= $half) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td>
+                                                                            <?php if (in_array($keyPar, $formatar)) : ?>
+                                                                                <?php $itemPar = formatMoney($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?= $itemPar; ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php endif; ?>
+                                                                <?php $current++; ?>
+                                                            <?php endforeach; ?>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <h6>&nbsp;</h6>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <?php $current = 1; ?>
+                                                            <?php foreach ($item['send'] as $keyPar => $itemPar) : ?>
+                                                                <?php if ($current > $half) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td>
+                                                                            <?php if (in_array($keyPar, $formatar)) : ?>
+                                                                                <?php $itemPar = formatMoney($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?= $itemPar; ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php endif; ?>
+                                                                <?php $current++; ?>
+                                                            <?php endforeach; ?>
+                                                            <?php if (count($item['extra_params']) > 0) : ?>
+                                                                <?php foreach ($item['extra_params'] as $keyPar => $itemPar) : ?>
+                                                                    <tr>
+                                                                        <td><strong><?= $keyPar ?></strong></td>
+                                                                        <td>
+                                                                            <?php if (is_array($itemPar)) : ?>
+                                                                                <?php $itemPar = json_encode($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?php if (in_array($keyPar, $formatar)) : ?>
+                                                                                <?php $itemPar = formatMoney($itemPar); ?>
+                                                                            <?php endif; ?>
+                                                                            <?= $itemPar; ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <h6>Retorno do SAP</h6>
+                                                        <table class="table table-bordered table-striped table-sm">
+                                                            <tr>
+                                                                <?php foreach ($item['response'] as $keyPar => $itemPar) : ?>
+                                                            <tr>
+                                                                <td><strong><?= $keyPar ?></strong></td>
+                                                                <td><?= $itemPar ?></td>
+                                                            </tr>
+                                                            <?php endforeach; ?>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">
+                                                    Fechar
+                                                </button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <small>Não existem registros a exibir</small>
+                        <?php endif; ?>
+
+                    </div>
+                    <!-- end timeline -->
+                </div> <!-- end slimscroll -->
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xl-12" id="carrinhosTemplate" style="display:none">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="header-title mb-2">
+                CARRINHOS ABANDONADOS
+            </h4>
+            <div data-simplebar="init" style="max-height: 430px; width: 100%;">
+                <div class="simplebar-wrapper" style="margin: 0px;">
+                    <div class="simplebar-height-auto-observer-wrapper">
+                        <div class="simplebar-height-auto-observer"></div>
+                    </div>
+                    <div class="simplebar-mask">
+                        <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                            <div class="simplebar-content-wrapper" style="padding: 0px;">
+                                <div class="simplebar-content" style="padding: 0px;">
+                                    <div class="slimscroll" style="max-height: 450px; overflow-y: scroll !important;">
+                                        <div class="timeline-alt pb-0" tag="div" id="carrinhosAbandonados"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="simplebar-placeholder" style="width: auto; height: 600px;"></div>
+                </div>
+                <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                    <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                </div>
+                <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                    <div class="simplebar-scrollbar" style="height: 308px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+$this->headLink()
+    ->prependStylesheet('https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css');
+
+$this->headScript()
+    ->prependFile('https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js')
+    ->prependFile($this->s3Url('/js/maps.js'));
+?>
+<!--<script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>-->
+<script>
+    //loadMapaCalor('map_vendas', dataVendas);
+    //loadMapaCalor('map_dividas', dataDividas);
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+    $(document).ready(function(){
+        let svg = $("#divsvg").html();
+        let graph = '<svg width="100%" height="100%" viewBox="28 -49 90 90" class="donut"><circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle><circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d2d3d4" stroke-width="3"></circle>';
+        let valuesConsumers = <?=json_encode($this->npsConsumidorGrafico)?>;
+        let valuesSim = <?=json_encode($this->npsAppSimGrafico);?>;
+        $("#npsSim").html(svg);
+        $("#npsConsumer").html(svg);
+        let classSelecaoValores = ".st8.st10.st17";
+        let classSelecaoTotais = ".st8.st10.st14";
+        let classSelecaoTotalGeral = ".st7.st10.st20";
+        let classeSelecaoPorcentagensConsumer = ".st7.st10.st21";
+        drawNpsConsumer(classSelecaoValores, classSelecaoTotais, classSelecaoTotalGeral,classeSelecaoPorcentagensConsumer, valuesConsumers, graph);
+        drawNpsSim(classSelecaoValores, classSelecaoTotais, classSelecaoTotalGeral,classeSelecaoPorcentagensConsumer, valuesSim, graph);
+        $(".verProdutos").click(function(){
+            var id = $(this).data('jsIdCarrinho');
+            $("#carrinho_"+id).modal('show');
+        });
+        setTimeout(function () {
+            let inicio = $("#inicio").val();
+            let fim = $("#fim").val();
+            debugger
+            if(inicio == "" && fim == "")
+            {
+                let queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const inicio = urlParams.get('inicio');
+                const fim = urlParams.get('fim');
+
+                debugger;
+            }
+            $.ajax({
+                url: '/html-carrinhos-abertos',
+                method: 'post',
+                data: {
+                    data_inicial: inicio,
+                    data_final: fim,
+                },
+                success: function (data) {
+                    carrinhosAbandonados(data);
+                },
+                error: function (xhr, errorMessage) {
+                    console.log(xhr);
+                    console.log(errorMessage);
+                }
+            });
+        }, 500);
+    });
+    function carrinhosAbandonados(carrinhos)
+    {
+        var options = {
+            series: carrinhos.usersGraphics,
+            chart: {
+                width: 600,
+                type: 'pie',
+            },
+            labels: carrinhos.titlesGraphics,
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 300
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+        let element = $(carrinhos.html);
+        $("#carrinhos").css('display', 'block');
+        $("#carrinhos").html($(element));
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+        $("#chart").css('width', '100%');
+        $(".apexcharts-canvas").addClass("mx-auto");
+    }
+    function drawNpsConsumer(classSelecaoValores, classSelecaoTotais, classSelecaoTotalGeral,classeSelecaoPorcentagensConsumer,valuesSim, graph) {
+
+        let textsConsumer =  $("#npsConsumer").find(classSelecaoValores);
+        let titleConsumer = "NPS CONSUMIDOR";
+        let classSelecaoTitulo = ".st7.st10.st11.st12";
+        $("#npsConsumer").find(classSelecaoTitulo).text(titleConsumer);
+        let i = 1;
+        let total = 0;
+        let detractors = 0;
+        let passives = 0;
+        let promoters = 0;
+        $(textsConsumer).each(function(){
+            $(this).text(valuesSim[i]);
+            total = parseInt(total) + parseInt(valuesSim[i]);
+
+            if(i < 7)
+            {
+                detractors = parseInt(detractors) + parseInt(valuesSim[i]);
+            } else if(i >= 7 && i < 9) {
+                passives = parseInt(passives) + parseInt(valuesSim[i]);
+            } else {
+                promoters = parseInt(promoters) + parseInt(valuesSim[i]);
+            }
+            i++;
+        });
+
+        let totaisConsumers = $("#npsConsumer").find(classSelecaoTotais);
+        i = 0;
+        $(totaisConsumers).each(function(){
+            if(i == 0) {
+                $(this).text(promoters);
+            } else if(i == 1) {
+                $(this).text(passives);
+            } else {
+                $(this).text(detractors);
+            }
+            i++;
+        });
+
+
+        let totalGeralConsumer = $("#npsConsumer").find(classSelecaoTotalGeral);
+        if(totalGeralConsumer) {
+            $(totalGeralConsumer).text(total);
+        }
+        let porcentagemDetractors = 0;
+        let porcentagemPassives = 0;
+        let porcentagemPromoters = 0;
+        if(total > 0) {
+            porcentagemDetractors = ((detractors*100)/total);
+            porcentagemPassives = ((passives*100)/total);
+            porcentagemPromoters = ((promoters*100)/total);
+        }
+        let porcentagemGeralConsumer = $("#npsConsumer").find(classeSelecaoPorcentagensConsumer);
+        i = 0;
+        let parsedPorcentagemPromoters = (porcentagemPromoters).toFixed(2);
+        let parsedPorcentagemPassives= (porcentagemPassives).toFixed(2);
+        let parsedPorcentagemDetractors = (porcentagemDetractors).toFixed(2);
+        let colors = { };
+        colors[parsedPorcentagemPromoters] = '#8DCCBA';
+        colors[parsedPorcentagemPassives] = '#FFE19F';
+        colors[parsedPorcentagemDetractors] = '#F4A8C1';
+        let porcentagens = [parsedPorcentagemPromoters, parsedPorcentagemPassives, parsedPorcentagemDetractors];
+        porcentagens.sort();
+        porcentagens.reverse();
+        let fixedOffset = 25;
+        let offset = 0.00;
+        let acumulator = Number(porcentagens[0]);
+
+        for(i = 0;i < 3; i++) {
+            if(i == 0)
+                offset = fixedOffset;
+            graph += '<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="'+colors[porcentagens[i]]+'" stroke-width="3" stroke-dasharray="'+porcentagens[i]+' '+(100-porcentagens[i]).toFixed(2)+'" stroke-dashoffset="'+offset+'"></circle>';
+            if(i > 0) {
+                acumulator += Number(porcentagens[i]);
+            }
+            offset = (100 - acumulator + fixedOffset).toFixed(2);
+        }
+        let nps = parseInt(Math.ceil(Number(porcentagemPromoters))) -  parseInt(Math.ceil(Number(porcentagemDetractors)));
+        graph += '<g class="chart-text"><text x="50%" y="50%" class="chart-number">'+nps+'</text><text x="50%" y="50%" class="chart-label"></text></g>';
+        graph += '</svg>';
+        $("#npsConsumer").find('svg').append(graph);
+        i = 0;
+        $(porcentagemGeralConsumer).each(function(){
+            if(i == 0) {
+                $(this).text(porcentagemDetractors.toFixed(2)+"%");
+            } else if(i == 1) {
+                $(this).text(porcentagemPassives.toFixed(2) + "%");
+            } else {
+                $(this).text(porcentagemPromoters.toFixed(2) + "%");
+            }
+            i++;
+        });
+    }
+    function drawNpsSim(classSelecaoValores, classSelecaoTotais, classSelecaoTotalGeral,classeSelecaoPorcentagens, valuesSim, graph) {
+
+        let textsSim =  $("#npsSim").find(classSelecaoValores);
+        let titleAppSim = "NPS APP SIM";
+        let classSelecaoTitulo = ".st7.st10.st11.st12";
+        $("#npsSim").find(classSelecaoTitulo).text(titleAppSim);
+        let i = 1;
+        let total = 0;
+        let detractors = 0;
+        let passives = 0;
+        let promoters = 0;
+        $(textsSim).each(function(){
+            $(this).text(valuesSim[i]);
+            total = parseInt(total) + parseInt(valuesSim[i]);
+
+            if(i < 7)
+            {
+                detractors = parseInt(detractors) + parseInt(valuesSim[i]);
+            } else if(i >= 7 && i < 9) {
+                passives = parseInt(passives) + parseInt(valuesSim[i]);
+            } else {
+                promoters = parseInt(promoters) + parseInt(valuesSim[i]);
+            }
+            i++;
+        });
+
+        let totaisAppSim = $("#npsSim").find(classSelecaoTotais);
+        i = 0;
+        $(totaisAppSim).each(function(){
+            if(i == 0) {
+                $(this).text(promoters);
+            } else if(i == 1) {
+                $(this).text(passives);
+            } else {
+                $(this).text(detractors);
+            }
+            i++;
+        });
+
+
+        let totalGeralAppSim = $("#npsSim").find(classSelecaoTotalGeral);
+        if(totalGeralAppSim) {
+            $(totalGeralAppSim).text(total);
+        }
+        let porcentagemDetractors = 0;
+        let porcentagemPassives = 0;
+        let porcentagemPromoters = 0;
+        if(total > 0) {
+            porcentagemDetractors = ((detractors*100)/total);
+            porcentagemPassives = ((passives*100)/total);
+            porcentagemPromoters = ((promoters*100)/total);
+        }
+        let porcentagemGeralAppSim = $("#npsSim").find(classeSelecaoPorcentagens);
+        i = 0;
+        let parsedPorcentagemPromoters = (porcentagemPromoters).toFixed(2);
+        let parsedPorcentagemPassives= (porcentagemPassives).toFixed(2);
+        let parsedPorcentagemDetractors = (porcentagemDetractors).toFixed(2);
+        let colors = { };
+        colors[parsedPorcentagemPromoters] = '#8DCCBA';
+        colors[parsedPorcentagemPassives] = '#FFE19F';
+        colors[parsedPorcentagemDetractors] = '#F4A8C1';
+        let porcentagens = [parsedPorcentagemPromoters, parsedPorcentagemPassives, parsedPorcentagemDetractors];
+        porcentagens.sort();
+        porcentagens.reverse();
+        let fixedOffset = 25;
+        let offset = 0.00;
+        let acumulator = Number(porcentagens[0]);
+
+        for(i = 0;i < 3; i++) {
+            if(i == 0)
+                offset = fixedOffset;
+            graph += '<circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="'+colors[porcentagens[i]]+'" stroke-width="3" stroke-dasharray="'+porcentagens[i]+' '+(100-porcentagens[i]).toFixed(2)+'" stroke-dashoffset="'+offset+'"></circle>';
+            if(i > 0) {
+                acumulator += Number(porcentagens[i]);
+            }
+            offset = (100 - acumulator + fixedOffset).toFixed(2);
+        }
+        let nps = parseInt(Math.ceil(Number(porcentagemPromoters))) -  parseInt(Math.ceil(Number(porcentagemDetractors)));
+        graph += '<g class="chart-text"><text x="50%" y="50%" class="chart-number">'+nps+'</text><text x="50%" y="50%" class="chart-label"></text></g>';
+        graph += '</svg>';
+        $("#npsSim").find('svg').append(graph);
+        i = 0;
+        $(porcentagemGeralAppSim).each(function(){
+            if(i == 0) {
+                $(this).text(porcentagemDetractors.toFixed(2)+"%");
+            } else if(i == 1) {
+                $(this).text(porcentagemPassives.toFixed(2) + "%");
+            } else {
+                $(this).text(porcentagemPromoters.toFixed(2) + "%");
+            }
+            i++;
+        });
+    }
+</script>

@@ -1,0 +1,55 @@
+<?php
+
+$openFormat = '<div%s>'
+    . '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+    . '<div>';
+
+/** @var Laminas\Mvc\Plugin\FlashMessenger\View\Helper\FlashMessenger $flash */
+$flash = $this->flashMessenger();
+$flash->setMessageOpenFormat($openFormat);
+$flash->setMessageCloseString('</div></div>');
+
+echo $flash->render('error', [
+    'alert',
+    'alert-dismissible',
+    'alert-danger',
+    'bg-danger',
+    'text-white',
+    'border-0',
+    'fade',
+    'show'
+]);
+
+
+echo $flash->render('info', [
+    'alert',
+    'alert-info',
+    'alert-dismissible',
+    'bg-info',
+    'text-white',
+    'border-0',
+    'fade',
+    'show',
+]);
+
+echo $flash->render('default', [
+    'alert',
+    'alert-secondary',
+    'alert-dismissible',
+    'bg-secondary',
+    'text-white',
+    'border-0',
+    'fade',
+    'show',
+]);
+
+echo $flash->render('success', [
+    'alert',
+    'alert-dismissible',
+    'alert-success',
+    'bg-success',
+    'text-white',
+    'border-0',
+    'fade',
+    'show'
+]);

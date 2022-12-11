@@ -1,0 +1,54 @@
+<div class="left-side-menu">
+    <div class="slimscroll-menu">
+        <a href="<?= $this->url('home'); ?>" class="logo text-center">
+            <span class="logo-lg">
+                <img src="<?= $this->s3Url('/images/app-icone.png'); ?>" alt="" height="166">
+            </span>
+            <span class="logo-sm">
+                <img src="<?= $this->s3Url('/images/app-icone.png'); ?>" alt="" height="166">
+            </span>
+        </a>
+        <ul class="metismenu side-nav">
+            <li class="side-nav-title side-nav-item mt-1">
+                <?= $this->translate('Relatórios'); ?>
+            </li>
+            <li class="side-nav-item home">
+                <a href="<?= $this->url('home'); ?>" class="side-nav-link">
+                    <i class="dripicons-meter"></i>
+                    <span> Dashboard </span>
+                </a>
+            </li>
+            <li class="side-nav-title side-nav-item mt-1">
+                Links de pagamento
+            </li>
+            <li class="side-nav-item payments-admin">
+                <a href="<?= $this->url('payments-admin'); ?>" class="side-nav-link">
+                    <i class="dripicons-wallet"></i>
+                    <span> Criar link de pagamento </span>
+                </a>
+            </li>
+            <li class="side-nav-item payments-admin-links">
+                <a href="<?= $this->url('payments-admin', ['action' => 'links']); ?>" class="side-nav-link">
+                    <i class="dripicons-clockwise"></i>
+                    <span> Status dos links enviados </span>
+                </a>
+            </li>
+            <li class="side-nav-title side-nav-item mt-1">
+                <?= $this->translate('Administrativo'); ?>
+            </li>
+            <li class="side-nav-item user">
+                <a href="<?= $this->url('user', ['action' => 'myTeam']); ?>" class="side-nav-link">
+                    <i class="dripicons-user-group"></i>
+                    <span>Minha equipe</span>
+                </a>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<?php if (isset($this->activeMenu) && $this->activeMenu != '') : ?>
+    <script>
+        $('.<?= $this->activeMenu; ?>').addClass('active');
+    </script>
+<?php endif;

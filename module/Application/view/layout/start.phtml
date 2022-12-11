@@ -1,0 +1,429 @@
+<?= $this->doctype() ?>
+
+<html lang="pt-BR">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
+    <!-- Mobile meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- SEO -->
+    <meta name="description"       content="O IT's NFT é uma iniciativa de profissionais e entusiastas da tecnologia que tem o objetivo de popularizar a criação e comercialização de NFTs de artistas brasileiros. No IT’s, você cria e vende NFTs de suas obras de forma simples e fácil.">
+    <meta name="author" 		   content="IT's NFT">
+    <meta property="og:image"      content="<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/web3_assets/img/bg_meta_tag.jpg">
+    <meta property="og:image:type" content="jpg">
+    <meta property="og:type"       content="website">
+    <meta property="og:site_name"  content="IT's NFT">
+    <meta name="keywords"          content="nft, criar nft, mintar nft, its nft, mundo nft, comprar nft, vender nft">
+    <meta name="robots"            content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="web3_assets/css/bootstrap.min.css">
+    <!-- IcoFont Min CSS -->
+    <link rel="stylesheet" href="web3_assets/css/icofont.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="web3_assets/fonts/font-awesome/css/font-awesome.css">
+    <script src="https://kit.fontawesome.com/42003fc0f0.js" crossorigin="anonymous"></script>
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="web3_assets/css/animate.css">
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="web3_assets/css/magnific-popup.css">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="web3_assets/css/style.css?t=<?php echo date("YmdHis"); ?>">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="web3_assets/css/responsive.css">
+    <!-- Web Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Urbanist:300,300i,400,400i,700,700i" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="web3_assets/css/swiper-bundle.min.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="web3_assets/css/custom.css?t=<?php echo date("YmdHis"); ?>">
+
+    <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@3/dark.css" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KC8HVLG701"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-KC8HVLG701');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WSLXX6V');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WSLXX6V"
+                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <title>IT's NFT - Seja um Artista Moderno!</title>
+</head>
+
+<body>
+<!-- Preloader Start -->
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="web3_assets/img/icon.png" class="" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Preloader Start -->
+
+<!-- Navbar Area -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark landing-page">
+    <div class="container">
+        <div class="row" style="align-items: center;">
+            <div class="col-lg-12 col-md-12">
+                <div class="navbar-header">
+
+                    <a class="navbar-brand" href="#">
+                        <img src="web3_assets/img/logo.png" width="98">
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <!-- <div class="header-button d-lg-none ml-auto mr-2 d-flex justify-content-center"></div> -->
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#sobre">Sobre Nós</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#form">Faça Parte</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#newsletter">Newsletter</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- End Navbar Area -->
+
+<!-- Main Banner -->
+<div class="main-banner-two bg-dark landing-page-banner">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-12">
+                <div class="banner-image">
+                    <img src="web3_assets/img/mb02.png" alt="banner-img" class="w-100">
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12">
+                <div class="hero-content">
+                    <h1>Você é um <span>artista</span> e quer entrar para o <span>mundo</span> <span>NFT?</span></h1>
+
+                    <p>O IT's NFT está selecionando artistas para criar NFTs de suas obras sem custo para o lançamento!</p>
+                    <a href="#form" class="btn btn-primary">Eu quero!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Main Banner -->
+
+<!-- Features Area -->
+<section class="features-area ptb-100 bg-dark landing-section" id="sobre">
+
+    <!-- <div class="circle-pattern-2"></div> -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="about-text">
+                    <span>quem somos</span>
+                    <h3>Sobre o IT's NFT</h3>
+                    <p>O IT's NFT é uma iniciativa de profissionais e entusiastas da tecnologia que tem o objetivo de popularizar a criação e comercialização de NFTs de artistas brasileiros.</p>
+                    <p>No IT’s, você cria e vende NFTs de suas obras de forma simples e fácil.</p>
+                    <p>E mais!</p>
+                    <p>O IT's é integrado ao Opensea, a principal plataforma de compra e venda de NFTs do mundo. Ao criar sua coleção no IT’s, ela é automaticamente disponibilizada no Opensea!</p>
+                    <p>Você pode enviar fotografias, desenhos, vídeos, músicas ou qualquer outro material digital de sua autoria.</p>
+<!--                    <h5>Nossas redes sociais</h5>-->
+<!--                    <ul class="d-flex">-->
+<!--                        <li>-->
+<!--                            <a href="#"><i class="fab fa-facebook-square"></i></a>-->
+<!--                        </li>-->
+<!--                        <li>-->
+<!--                            <a href="#"><i class="fab fa-instagram-square"></i></a>-->
+<!--                        </li>-->
+<!--                        <li>-->
+<!--                            <a href="#"><i class="fab fa-twitter-square"></i></a>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12">
+                <div class="row about-image">
+                    <div class="col-6 col-lg-6 col-md-6">
+                        <div class="image">
+                            <img src="web3_assets/img/about01.png" alt="Sobre a IT's NFT">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-6 col-md-6">
+                        <div class="image">
+                            <img src="web3_assets/img/about02.png" alt="about">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-6 col-md-6">
+                        <div class="image mt-30">
+                            <img src="web3_assets/img/about03.png" alt="about">
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-6 col-md-6">
+                        <div class="image mt-30">
+                            <img src="web3_assets/img/about04.png" alt="about">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<!-- Form -->
+<section class="analysis-area ptb-100 bg-dark landing-section" id="form">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="analysis-form content-area">
+                    <h3 class="text-center mb-5">Preencha o formulário e entre para o mundo NFT</h3>
+                    <form action="" method="POST" enctype="multipart/form-data">
+
+                        <label class="uploadFile">
+                            <span class="filename">Arquivos aceitos PNG, JPG, GIF, WEBP ou MP4. Max 50Mb.</span>
+                            <input required multiple type="file" name="file[]" class="inputfile form-control" id="upload-img-nft" accept=".jpg, .png, .gif, .webp, .mp4">
+                        </label>
+
+                        <div class="form-group">
+                            <input type="text" required placeholder="Nome do item *" class="form-control" name="name_nft" id="input-name-nft">
+                        </div>
+
+                        <div class="form-group">
+                            <select class="form-control" required id="tipo-nft" name="tipo_nft">
+                                <option value="">-- Tipo do NFT--</option>
+                                <option value="Filme">Filme</option>
+                                <option value="Vídeo">Vídeo</option>
+                                <option value="Caricatura">Caricatura</option>
+                                <option value="Foto">Foto</option>
+                                <option value="Item de perfil">Item de perfil</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="nome" name="nome" placeholder="Nome completo *" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="email" placeholder="Seu melhor Email *" id="email" name="email" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="tel" placeholder="Seu melhor Telefone *" id="telefone" name="telefone" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="sr-only" for="message2">Mensagem</label>
+                            <textarea class="form-control" rows="4" placeholder="Fale um pouco sobre sua coleção ou finalidade..." required="" name="finalidade"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="checkbox" required> Eu confirmo que a arte é de minha propriedade
+                        </div>
+
+                        <button type="submit" id="subformartis" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12">
+                <div class="analysis-text">
+                    <span>inscreva-se!</span>
+                    <h3>Envie sua coleção e venda NFTs para o mundo</h3>
+                    <p>Vamos selecionar 10 artistas para criar e comercializar NFTs de suas obras sem custo para o lançamento.</p>
+                    <ul>
+                        <li>Envie sua coleção pelo formulário ao lado até 30/04/2022</li>
+                        <li>Suas obras serão avaliadas pelo nosso time</li>
+                        <li>Caso seja selecionado, nossa equipe entrará em contato por e-mail</li>
+                        <li>Criaremos NFTs de suas obras e disponibilizaremos para venda em todo o mundo, gratuitamente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="rocket"><img src="web3_assets/img/rocket.png" alt="rocket"></div>
+    </div>
+
+</section>
+
+<!-- Newsletter  -->
+<section class="subscribe-area ptb-100 secondary-bg landing-section" id="newsletter">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="newsletter">
+                    <h4>Assine nossa newsletter e receba novidades sobre o mundo dos NFTs.</h4>
+                    <form class="newsletter-form" data-toggle="validator" action="" method="POST">
+                        <input type="email" class="form-control" placeholder="Digite seu melhor email" name="newslatter_email" required autocomplete="off">
+                        <button class="btn btn-primary" type="submit">Inscreva-se</button>
+                        <div id="validator-newsletter" class="form-result"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<!-- Newsletter -->
+
+<!-- Footer Area -->
+<footer class="footer-area bg-dark" id="contato">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-md-12 col-12">
+                <div class="single-footer-widget">
+                    <div class="logo">
+                        <a href="#"><img src="web3_assets/img/logo.png"></a>
+                    </div>
+                    <p>Quer saber mais sobre a criação e comercialização de NFTs das suas obras? Quer tirar dúvidas antes de enviar sua coleção? Fale com nossos especialistas.</p>
+<!--                    <ul class="social-links">-->
+<!--                        <li><a href="#"><i class="icofont-facebook"></i></a></li>-->
+<!--                        <li><a href="#"><i class="icofont-twitter"></i></a></li>-->
+<!--                        <li><a href="#"><i class="icofont-instagram"></i></a></li>-->
+<!--                        <li><a href="#"><i class="icofont-linkedin"></i></a></li>-->
+<!--                        <li><a href="#"><i class="icofont-pinterest"></i></a></li>-->
+<!--                    </ul>-->
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 col-12">
+                <div class="single-footer-widget">
+                    <h3>Fale Conosco</h3>
+                    <form class="margin-clear" action="" method="POST">
+                        <div class="form-group mb-10">
+                            <label class="sr-only" for="name2">Seu Nome</label>
+                            <input type="text" class="form-control" placeholder="Seu nome" required="" name="nome_fale_conosco">
+                        </div>
+                        <div class="form-group mb-10">
+                            <label class="sr-only" for="email2">Email</label>
+                            <input type="email" class="form-control" placeholder="Seu melhor email" required="" name="email_fale_conosco">
+                        </div>
+                        <div class="form-group mb-10">
+                            <label class="sr-only" for="message2">Mensagem</label>
+                            <textarea class="form-control" rows="4" placeholder="Mensagem..." required="" name="mensagem_fale_conosco"></textarea>
+                        </div>
+                        <button type="submit" class="margin-clear submit-button btn btn-outline-default">Enviar</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="copyright-area">
+        <div class="container">
+            <div class="row" style="align-items: flex-end;">
+                <div class="col-lg-6 col-md-6">
+                    <p>Copyright @2022 Todos os direitos reservados</p>
+                </div>
+
+                <div class="col-lg-6 col-md-6 text-right">
+<!--                    <p>Um produto&nbsp;&nbsp;<a href="https://mobiup.com.br/" target="_blank"><img src="web3_assets/img/logo-mobi-white.png" style="vertical-align: baseline;" class="img-fluid"></a></p>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- End Footer Area -->
+
+<div class="go-top"><i class="icofont-stylish-up"></i></div>
+
+<!-- jQuery Min JS -->
+<script src="web3_assets/js/jquery.min.js"></script>
+<!-- Prpper JS -->
+<script src="web3_assets/js/popper.min.js"></script>
+<!-- Bootstrap Min JS -->
+<script src="web3_assets/js/bootstrap.min.js"></script>
+<!-- Jquery Magnific Popup Min Js -->
+<script src="web3_assets/js/jquery.magnific-popup.min.js"></script>
+<!-- Jquery Mixitup Min Js -->
+<script src="web3_assets/js/jquery.mixitup.min.js"></script>
+<!-- Waypoints Min Js -->
+<script src="web3_assets/js/waypoints.min.js"></script>
+<!-- Jquery CounterUp Min JS -->
+<script src="web3_assets/js/jquery.counterup.min.js"></script>
+<!-- Countdown -->
+<script src="web3_assets/js/count-down.js"></script>
+<!-- Swiper JS -->
+<script src="web3_assets/js/swiper-bundle.min.js"></script>
+<!-- Main JS -->
+<script src="web3_assets/js/main.js"></script>
+<!-- Custom JS -->
+<script src="web3_assets/js/custom.js"></script>
+
+<?php
+if (isset($_GET['i']) && $_GET['i'] == 's') {
+?>
+<script>
+    swal.fire('Parabéns', 'Suas informações foram enviadas com sucesso. Aguarde nosso contato.', 'success');
+</script>
+<?php
+}
+?>
+
+<?php
+if (isset($_GET['i']) && $_GET['i'] == 'nl') {
+    ?>
+    <script>
+        swal.fire('Obrigado', 'Agora você receberá todas as nossas novidades, e do mundo NFT!', 'success');
+    </script>
+    <?php
+}
+?>
+
+<script>
+    $("#subformartis").click(function (){
+        if ($("#input-name-nft").val() != '' && $("#tipo-nft").val() != '' && $("#nome").val() != '' && $("#email").val() != '' && $("#telefone").val() != '') {
+            swal.fire({
+                title: 'Processando suas informações!',
+                html: 'Por favor aguarde um pouquinho...',
+                allowOutsideClick: false,
+                onBeforeOpen: () => {
+                    swal.showLoading();
+                },
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

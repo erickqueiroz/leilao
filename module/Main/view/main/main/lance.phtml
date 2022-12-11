@@ -1,0 +1,208 @@
+<?php
+$https = 'http://';
+if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+    $https = 'https://';
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Leilão</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="<?=$https.$_SERVER['HTTP_HOST']?>/assets/css/styles.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js" integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
+
+    <script src="https://www.unpkg.com/web3@1.7.0/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@3/dark.css" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed"></script>
+    <script>
+        let base = '<?=$https.$_SERVER['HTTP_HOST']?>/';
+    </script>
+</head>
+<body>
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="/">HWeb3</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/ends">Encerramento</a></li>
+            </ul>
+            <div class="header-dropdown-buttons text-md-right">
+                <div class="btn-success btn-group position-relative connect-area">
+                    <button class="hidden-md-down btn btn-default-transparent radius-50" onclick="javascript: $('#modalConnect').modal('show');"><i class="bi bi-wallet"></i> Conectar</button>
+                </div>
+                <div class="btn-group position-relative disconnect-area" style="display:none;">
+                    <button class="btn-success hidden-md-down btn btn-default-transparent radius-50 connected"  data-toggle="dropdown" aria-expanded="true" aria-haspopup="true"><i class="bi bi-wallet"></i> 0x000...0000</button>
+                    <div class="dropdown-menu dropdown-menu-right cart dropdown-animation" aria-labelledby="header-drop">
+                        <a class="dropdown-item d-flex align-items-center justify-content-between font-weight-bold disconnect" href="javascript:void(0);" onclick="onDisconnect();">
+                            Desconectar
+                            <span><i class="bi bi-box-arrow-left"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="modal popup fade" id="modalConnect" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2 class="text-center">Conectar</h2>
+                <p class="text-center">Conecte com uma das carteiras disponíveis para mintar seu NFT ou participar do leilão.</p>
+                <div class="wallet__options mt-3">
+
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button class="btn btn-success" onclick="loginTorus();" type="button">
+                            Redes Sociais <span><img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/torus.png" alt="" width="18"></span>
+                        </button>
+                        <button class="btn btn-primary" onclick="onConnect();" type="button">
+                            Metamask <span><img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/metamask-alternative.png" alt="" width="18"></span>
+                        </button>
+                        <button class="btn btn-primary" onclick="javascript: $('#modalConnect').modal('hide')" type="button">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal popup fade" id="modalPix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <h2 class="text-center valorPix">R$ 510,00</h2>
+                <h5 class="text-center">Pagar com PIX</h5>
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAY8AAAGPAQAAAACM4WFKAAAE60lEQVR4nO2cQY6jOhRFz4tLIlIPyA5gJ9TO7OwMdgI7gEFLRCLcP3hOVf3Zr+SrOh2ZWRKOZFvo8nzvc0x889LhuwQUpCAFKUhB/tMlaQagmgHTCkSo5NcM7EFz0wPQSPvTzuVpESTNjaSt0gjaqMdOhBUgf7kDTR/znWWR70QGO8DS9RyCphZsox7BqnVp4eBLbnb88YG9INKlnUujc7paPbVd4nqsx07yJf+DA/vLEZeLHtuqT91N2gDYoVYfCZL6CFWRiweQTjvUQ0x7kMYhHaikPh6C5imaLkcAaf3xgb0QMpnZG0t3Vrgcl5YILC3Y5bh0Zx1gaTmb2emHB/YiCPr35TqhrZJ6pLUeO5nW+vOOIhffv3ItrK2a+VzPDSDaBk0fweu6osmPIE0fVbngUs2TJb1VUs9OpeEd07p0PXA5/fDAXgS5yQVAI+VC4lM1Zjrt/qVtVZGLh+TCpLlR2qmkHtuopfSxn65mOmkrcnE/Uo9EmZ2mdw7AFNMeNNm73+FCPUKRi4eQpmcPa63z7Y13gFrndAAYEtcjcD7gG7/nnsszIlmT0+4P9B5Wmj4qy6+XFbble4smP4IMMq1LJwsb9fCOqsXaIQFLO9ge1lryTz88sFdCunS4HmEQ13pqOwtuCYWtmgGux6Ul3qT5yefyhAiSNBIJK41SNpLdu/ci4+YMeeVR5OKREm6DRpLWWu7P06W8xwO8yCim/X1ITkaSr/XX3KlRcjEWUI9dkm+5yyLfjRyudqKzPaxLy1lv1ONw67DYwwpDUklG7kRuGR9hrcdOe8jiUc1ZPEbQBkWTH0Bck7vsXSTLbgUA8cO7uL0Ni1w89CSbv+r2sNY3L6i/vQ0Jur3/yovvgRIO23LfhSQleeK3B2nMT3nJ+O5HbnVyduGyGOMZ3x688vAvSwn3CLK04C5cBOrBkraL2TtwaQYTXE6TmftETz6Xp0Q+2rRuxjy1pN1rDfgoK8ZOe5GLO5HbZuS2kGGt1WNaaSTzNi2PRFJZ5HsRtzqz/PZkFd69/dBD6/gZkJQ6+SFN5mrNCNnqJCynRlK1nNytzwFJsTof2Ywk3+pFbZXcpq/Hj3bO3K21Q9mM3IW8AbVAV6vHFgu/T/M5+W+R8PsIhO3XPMX+sP2af25gr4cMKWhd2i5pY7F3rm/V1HYWLkemaLcEtSQjdyL5xYe7P8m2SmOXsk1hWqFLBH0WGUUu7kU6HcJyAgjr0oLecMfT+2mvZi1x/wMDew3kMxmp5qaP9pGMeMOhtxh6kJqL5/Ik34c0SoTlNL0jOy5tZ/IuWZlZO6RwqefJpLfSd3Ef4gZR3jP30b56cnEPaw73JPfkiiY/UF2YaTnR2dWO3sDpB3M2aM62X49MMYWLWfvDA3sNJGty9IjJm4W65D9Ff3bT7YxfqS4eQGopETQzpOubt7N4c2fYLieIu2+yKXXynciXE6m5XJ7p3HDrgUojHonkQ1DlSX4g4/MWw5Rzktym/NHqsn6J+soif//Sxzk+qSe3zua0GjxIdU0uT/L/gCwt8eCmPWGl6TFJwzvyuMT7Dv+OuTwX8vVEKt2XE765M2AGcqx6i6aedi5PjuR2liGp0tT1aGOxaOAdL1qXtrM/MbAXQvxEKo1S8DpZlR/uq1Yg7lc7Tabd/0HgyefyjIiVP3oqSEEKUpCnQf4BjMBRybqciTgAAAAASUVORK5CYII=" style="width: 350px;"><br>
+                <div class="input-group mb-3">
+                    <input readonly type="text" class="form-control" value="00020101021226790014br.gov.bcb.pix2557invoice.starkbank.com/v2/b6c3141f88b542a7832b14942e985fae5204000053039865802BR5925Supermup Plataformas Digi6009Sao Paulo62070503***6304CF44" aria-describedby="basic-addon2">
+                    <span class="input-group-text" id="basic-addon2">Copiar</span>
+                </div>
+                <button class="btn btn-success" onclick="javascript: pay();" type="button">Já Paguei!</button><br><br>
+                <div class="modal-footer text-center">
+                    <img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/ItsPay.png" style="width: 85px; margin: 0 auto;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 justify-content-center">
+                <img class="card-img-top" src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/mobiup.png" alt="..." />
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                Descrição
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                            <div class="accordion-body">
+                                Leilão de NFTs imobiliários.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                                Detalhes
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                            <div class="accordion-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Contrato</th>
+                                            <th scope="col" style="text-align: right;">0x6e6bf4....4065</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Tipo do Token</th>
+                                            <th scope="col" style="text-align: right;">ERC-721</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Blockchain</th>
+                                            <th scope="col" style="text-align: right;">ETH</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="idToken" value="<?=$this->id?>" />
+            <div class="col-md-6 justify-content-center">
+                <h3 style="text-align: center;">Token <?=$this->id?></h3>
+                <div class="card">
+                    <div class="card-header">
+                        O leilão está Ativo!
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Leilão Token <?=$this->id?></h5>
+                        <p class="card-text">Faça seu lance e aguarde o leilão terminar.</p>
+                        <p class="card-text">Seu lance será de R$ 10,00 à mais do lance atual.</p>
+                        <a href="#" class="btn btn-primary" id="btn-lance" onclick="lance();">Dar Lance</a>
+                        <p id="end-auction-text" class="card-text text-warning"></p>
+                        <p id="end-auction-text-winner" class="card-text text-success"></p>
+                    </div>
+                    <div class="card-footer text-muted last-bid">
+                        Último lance R$ 500,00 - <a href="">0x0000..0000</a>
+                    </div>
+                </div>
+                <hr>
+                <h3>Últimos lances</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">TOKEN</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Wallet</th>
+                        <th scope="col">Transação</th>
+                    </tr>
+                    </thead>
+                    <tbody class="last-transaction"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Mobiup 2022</p></div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<!-- Core theme JS-->
+<script src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/js/scripts.js"></script>
+<script>
+    setTimeout(() => {
+        dataInfoCollection();
+    }, 1000);
+</script>
+</body>
+</html>

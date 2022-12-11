@@ -1,0 +1,22 @@
+{
+  "name":"Hackathon Imoveis",
+  "description":"Hackathon Imoveis",
+  "external_link":"",
+  "image":"https:\/\/ipfs.io\/ipfs\/QmbE5GVYAc8PmxDapxdFVUfef8fEhWjfg47QUBSeUcvNrA",
+  "attributes":[
+    {
+      "display_type":"number",
+      "trait_type":"Generation",
+      "value":1
+    },
+    {
+      "trait_type":"Rarity",
+      "value":"Imovel"
+    },
+    {
+      "display_type":"date",
+      "trait_type":"birthday",
+      "value":"1668614112"
+    }
+  ]
+}

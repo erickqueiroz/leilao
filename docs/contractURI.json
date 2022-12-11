@@ -1,0 +1,8 @@
+{
+  "name": "Hackathon Imoveis",
+  "description": "Hackathon Imoveis",
+  "external_url": "https://www.test.io",
+  "image": "https://ipfs.io/ipfs/QmbE5GVYAc8PmxDapxdFVUfef8fEhWjfg47QUBSeUcvNrA",
+  "seller_fee_basis_points": 1000,
+  "fee_recipient": "0x94C4a3E8bfa74594249A8df7F0558Ce248c89bd5"
+}

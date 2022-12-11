@@ -1,0 +1,37 @@
+
+<div class="left-side-menu">
+    <div class="slimscroll-menu">
+        <a href="<?= $this->url('home'); ?>" class="logo text-center">
+            <span class="logo-lg">
+                <img src="/images/app-icone.png" alt="" height="166">
+            </span>
+            <span class="logo-sm">
+                <img src="/images/app-icone.png" alt="" height="166">
+            </span>
+        </a>
+        <ul class="metismenu side-nav">
+            <li class="side-nav-title side-nav-item mt-1">
+                Notificações
+            </li>
+            <li class="side-nav-item payments-admin">
+                <a href="<?= $this->url('notifications'); ?>" class="side-nav-link">
+                    <i class="dripicons-device-mobile"></i>
+                    <span>Notificações e alertas</span>
+                </a>
+            </li>
+            <li class="side-nav-item notifications-config">
+                <a href="<?= $this->url('notifications-config'); ?>" class="side-nav-link">
+                    <i class="dripicons-alarm"></i>
+                    <span>Regua de cobrança</span>
+                </a>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<?php if (isset($this->activeMenu) && $this->activeMenu != '') : ?>
+    <script>
+        $('.<?= $this->activeMenu; ?>').addClass('active');
+    </script>
+<?php endif;

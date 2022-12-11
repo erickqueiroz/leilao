@@ -1,0 +1,35 @@
+<?php
+/** @var \User\Model\User $loggedUser */
+$loggedUser = $this->getUserIdentity();
+?>
+
+<!-- Topbar Start -->
+<div class="navbar-custom">
+    <ul class="list-unstyled topbar-right-menu float-right mb-0">
+        <?php if ($loggedUser) : ?>
+            <li class="notification-list">
+                <div class=" dropdown-header noti-title">
+                    <h6 class="text-overflow m-0"><?= $this->translate('Welcome'); ?></h6>
+                    <?= $loggedUser->getDisplayName(); ?>
+                </div>
+            </li>
+            <li class="notification-list">
+                <a href="<?= $this->url('profile'); ?>" class="nav-link dropdown-toggle nav-user nav-user-custom arrow-none mr-0">
+                    <i class="mdi mdi-account-circle"></i>
+                    <span><?= $this->translate('Profile'); ?></span>
+                </a>
+            </li>
+            <li class="notification-list">
+                <a href="<?= $this->url('logout'); ?>" class="nav-link dropdown-toggle nav-user nav-user-custom arrow-none mr-0">
+                    <i class="mdi mdi-logout"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        <?php endif; ?>
+    </ul>
+    <button class="button-menu-mobile open-left disable-btn">
+        <i class="mdi mdi-menu"></i>
+    </button>
+    
+</div>
+<!-- end Topbar -->
