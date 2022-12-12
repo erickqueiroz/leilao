@@ -31,6 +31,29 @@ let dataCollection = {
     lastBid: '',
 };
 
+let imoveis = {
+    '1': {
+        titulo: 'ALAMEDA PAIAGUÁS',
+        descricao: 'O terreno de 31 mil m², onde será erguida a Alameda Paiaguás, vai abrigar diversos serviços que poderão ser utilizados não só pelos 10 mil servidores que trabalham no local todos os dias, mas, também, por toda a comunidade.',
+        imagem: base + 'assets/img/imag01.png',
+    },
+    '2': {
+        titulo: 'CENTRO DE SAO PAULO',
+        descricao: '5 Prédios vizinhos com 150 apartamentos de 80m2 cada. Concessão para moradia. A Contrapartida será a exploração das placas de publicidade dos imóveis e lojas no primeiro andar',
+        imagem: base + 'assets/img/img02.png',
+    },
+    '3': {
+        titulo: 'Estádio do maracanã',
+        descricao: 'Concessão para exploração do estádio por 5 anos. A Contrapartida será a exploração das placas de publicidade e bilheteria dos eventos.',
+        imagem: base + 'assets/img/imag03.png',
+    },
+    '4': {
+        titulo: 'Praça Vila Mariana - Afonso Celso',
+        descricao: 'Concessão para exploração da praça por 5 anos. A Contrapartida será a exploração das placas de publicidade e bilheteria dos eventos.',
+        imagem: base + 'assets/img/imag04.png',
+    },
+}
+
 const Web3Modal             = window.Web3Modal.default;
 const WalletConnectProvider = window.WalletConnectProvider.default;
 const EvmChains             = window.evmChains;
@@ -145,7 +168,7 @@ async function fetchAccountData() {
     web3 = new Web3(provider);
 
     const chainId = await web3.eth.getChainId();
-    const chainData = await EvmChains.getChain(chainId);
+    //const chainData = await EvmChains.getChain(chainId);
 
     // if (chainData.chainId != 5) {
     //     swal.fire({
@@ -397,19 +420,19 @@ async function dataInfoNftsEnds() {
                     $(".row-nfts").append('<div class="col mb-3">\n' +
                         '                <div class="card h-100">\n' +
                         '                    <!-- Product image-->\n' +
-                        '                    <img class="card-img-top" src="' + base + 'assets/img/mobiup.png" alt="..." />\n' +
+                        '                    <img class="card-img-top" src="' + imoveis[event.returnValues.tokenId].imagem + '" alt="..." />\n' +
                         '                    <!-- Product details-->\n' +
                         '                    <div class="card-body p-4">\n' +
                         '                        <div class="text-center">\n' +
                         '                            <!-- Product name-->\n' +
-                        '                            <h5 class="fw-bolder">Token ' + event.returnValues.tokenId + '</h5>\n' +
+                        '                            <h5 class="fw-bolder">' + imoveis[event.returnValues.tokenId].titulo + '</h5>\n' +
                         '                            <!-- Product price-->\n' +
                         '                        </div>\n' +
                         '                    </div>\n' +
                         '                    <!-- Product actions-->\n' +
                         '                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">\n' +
                         '                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Leilão Finalizado</a></div>\n' +
-                        '                        <div class="text-center">Wallet ganhadora <a href="' + dataInfoEnv.urlNetwork + '/token/' + dataInfoEnv.contrato + '?a=' + event.returnValues.tokenId + '">' + formatMinWallet(getWalletWinner) + '</a>');$("#end-auction-text-winner").html('Wallet ganhadora <a href="' + dataInfoEnv.urlNetwork + '/address/' + getWalletWinner + '">' + formatMinWallet(getWalletWinner) + '</a></div>\n' +
+                        '                        <div class="text-center">Wallet ganhadora <a target="_blank" href="' + dataInfoEnv.urlNetwork + '/token/' + dataInfoEnv.contrato + '?a=' + event.returnValues.tokenId + '">' + formatMinWallet(getWalletWinner) + '</a>');$("#end-auction-text-winner").html('Wallet ganhadora <a target="_blank" href="' + dataInfoEnv.urlNetwork + '/address/' + getWalletWinner + '">' + formatMinWallet(getWalletWinner) + '</a></div>\n' +
                         '                    </div>\n' +
                         '                </div>\n' +
                         '            </div>');
@@ -417,12 +440,12 @@ async function dataInfoNftsEnds() {
                     $(".row-nfts").append('<div class="col mb-3">\n' +
                         '                <div class="card h-100">\n' +
                         '                    <!-- Product image-->\n' +
-                        '                    <img class="card-img-top" src="' + base + 'assets/img/mobiup.png" alt="..." />\n' +
+                        '                    <img class="card-img-top" src="' + imoveis[event.returnValues.tokenId].imagem + '" alt="..." />\n' +
                         '                    <!-- Product details-->\n' +
                         '                    <div class="card-body p-4">\n' +
                         '                        <div class="text-center">\n' +
                         '                            <!-- Product name-->\n' +
-                        '                            <h5 class="fw-bolder">Token ' + event.returnValues.tokenId + '</h5>\n' +
+                        '                            <h5 class="fw-bolder">' + imoveis[event.returnValues.tokenId].titulo + ' </h5>\n' +
                         '                            <!-- Product price-->\n' +
                         '                        </div>\n' +
                         '                    </div>\n' +
@@ -438,6 +461,14 @@ async function dataInfoNftsEnds() {
     }).catch(function (error) {
         console.log(error);
     });
+}
+
+async function infoTokenSingle() {
+    let idToken = $("#idToken").val();
+    $(".img-imob").attr("src", imoveis[idToken].imagem);
+    $(".desc-imob").text(imoveis[idToken].descricao);
+    $(".titulo-imob").text(imoveis[idToken].titulo);
+    $(".contrato-ativo").html('<a target="_blank" href="' + dataInfoEnv.urlNetwork + '/address/' + dataInfoEnv.contrato + '">' + formatMinWallet(dataInfoEnv.contrato) + '</a>');
 }
 
 async function endAuction(idToken) {
@@ -510,6 +541,12 @@ async function sendNftsWinner(idToken) {
     }
 }
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
 async function dataInfoNfts() {
     const urlNft      = dataInfoEnv.infuraETH;
     const web3Nft     = new Web3(new Web3.providers.HttpProvider(urlNft));
@@ -532,19 +569,19 @@ async function dataInfoNfts() {
                 $(".row-nfts").append('<div class="col mb-5">\n' +
                     '                <div class="card h-100">\n' +
                     '                    <!-- Product image-->\n' +
-                    '                    <img class="card-img-top" src="' + base + 'assets/img/mobiup.png" alt="..." />\n' +
+                    '                    <img class="card-img-top" src="' + imoveis[event.returnValues.tokenId].imagem + '" alt="..." />\n' +
                     '                    <!-- Product details-->\n' +
                     '                    <div class="card-body p-4">\n' +
                     '                        <div class="text-center">\n' +
                     '                            <!-- Product name-->\n' +
-                    '                            <h5 class="fw-bolder">Token ' + event.returnValues.tokenId + '</h5>\n' +
+                    '                            <h5 class="fw-bolder">' + imoveis[event.returnValues.tokenId].titulo + '</h5>\n' +
                     '                            <!-- Product price-->\n' +
-                    '                            R$ 40,00 - R$ 80,00\n' +
                     '                        </div>\n' +
                     '                    </div>\n' +
                     '                    <!-- Product actions-->\n' +
                     '                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">\n' +
-                    '                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="/lance/' +event.returnValues.tokenId + '">Lance</a></div>\n' +
+                    '                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="/lance/' +event.returnValues.tokenId + '">Dar Lance</a><hr>' +
+                    '<footer>Acaba em ' + getRandomInt(0, 9) + ' dias</footer></div>\n' +
                     '                    </div>\n' +
                     '                </div>\n' +
                     '            </div>')
@@ -567,7 +604,7 @@ async function dataInfoCollection() {
     if (endAuction == true) {
         $("#btn-lance").hide();
         $("#end-auction-text").text('Leilão finalizado!');
-        $("#end-auction-text-winner").html('Wallet ganhadora <a href="' + dataInfoEnv.urlNetwork + '/token/' + dataInfoEnv.contrato + '?a=' + $("#idToken").val() + '">' + formatMinWallet(getWalletWinner) + '</a>');$("#end-auction-text-winner").html('Wallet ganhadora <a href="' + dataInfoEnv.urlNetwork + '/address/' + getWalletWinner + '">' + formatMinWallet(getWalletWinner) + '</a>');
+        $("#end-auction-text-winner").html('Wallet ganhadora <a target="_blank" href="' + dataInfoEnv.urlNetwork + '/token/' + dataInfoEnv.contrato + '?a=' + $("#idToken").val() + '">' + formatMinWallet(getWalletWinner) + '</a>');$("#end-auction-text-winner").html('Wallet ganhadora <a target="_blank" href="' + dataInfoEnv.urlNetwork + '/address/' + getWalletWinner + '">' + formatMinWallet(getWalletWinner) + '</a>');
     }
 
     dataCollection.walletWinner = getWalletWinner;
@@ -592,7 +629,7 @@ async function dataInfoCollection() {
                     '                        <th scope="row">' + event.returnValues.tokenId + '</th>\n' +
                     '                        <td>' + number_format(parseFloat(event.returnValues.amount), 2, ',', '.') + '</td>\n' +
                     '                        <td>' + formatMinWallet(event.returnValues.wallet) + '</td>\n' +
-                    '                        <td><a href="' + dataInfoEnv.urlNetwork + '/tx/' + event.transactionHash + '">' + formatMinWallet(event.transactionHash) + '</a></td>\n' +
+                    '                        <td><a target="_blank" href="' + dataInfoEnv.urlNetwork + '/tx/' + event.transactionHash + '">' + formatMinWallet(event.transactionHash) + '</a></td>\n' +
                     '                    </tr>');
             }
         }
@@ -606,8 +643,8 @@ async function dataInfoCollection() {
 }
 
 async function viewInfoContract() {
-    $('.last-bid').html('Último lance R$ ' + number_format(dataCollection.lastBid, 2, ',', '.') + ' - <a href="' + dataInfoEnv.urlNetwork + '/address/' + userLoginData.address + '">' + formatMinWallet(dataCollection.walletWinner) + '</a>');
-    $('.valorPix').text("R$ " + number_format(parseFloat(buyUser.amount) + 10, 2, ',', '.'));
+    $('.last-bid').html('Último lance R$ ' + number_format(dataCollection.lastBid, 2, ',', '.') + ' - <a target="_blank" href="' + dataInfoEnv.urlNetwork + '/address/' + userLoginData.address + '">' + formatMinWallet(dataCollection.walletWinner) + '</a>');
+    $('.valorPix').text("R$ " + number_format(parseFloat(buyUser.amount) + 1000, 2, ',', '.'));
 }
 
 function number_format(number, decimals, dec_point, thousands_point) {
@@ -689,7 +726,7 @@ async function pay() {
     var abiMint = dataInfoEnv.abiLeilao;
     const contract = new web3Teste.eth.Contract(abiMint, contratoTesteNFT);
 
-    const tx = await contract.methods.mint(String(userLoginData.address), parseFloat(buyUser.amount) + 10, $('#idToken').val());
+    const tx = await contract.methods.mint(String(userLoginData.address), parseFloat(buyUser.amount) + 1000, $('#idToken').val());
 
     if (userLoginData.address == '') {
         swal.fire('Ops', 'Você precisa estar conectado, clique no botão conectar.', 'error');

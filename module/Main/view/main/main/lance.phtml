@@ -11,7 +11,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Leilão</title>
+    <title>CONCESSÃO DE DIREITO REAL DE USO</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -39,7 +39,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="/">HWeb3</a>
+        <a class="navbar-brand" href="/">CONCESSÃO DE DIREITO REAL DE USO</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
@@ -73,9 +73,6 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
                 <div class="wallet__options mt-3">
 
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <button class="btn btn-success" onclick="loginTorus();" type="button">
-                            Redes Sociais <span><img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/torus.png" alt="" width="18"></span>
-                        </button>
                         <button class="btn btn-primary" onclick="onConnect();" type="button">
                             Metamask <span><img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/metamask-alternative.png" alt="" width="18"></span>
                         </button>
@@ -98,10 +95,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
                     <input readonly type="text" class="form-control" value="00020101021226790014br.gov.bcb.pix2557invoice.starkbank.com/v2/b6c3141f88b542a7832b14942e985fae5204000053039865802BR5925Supermup Plataformas Digi6009Sao Paulo62070503***6304CF44" aria-describedby="basic-addon2">
                     <span class="input-group-text" id="basic-addon2">Copiar</span>
                 </div>
-                <button class="btn btn-success" onclick="javascript: pay();" type="button">Já Paguei!</button><br><br>
-                <div class="modal-footer text-center">
-                    <img src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/ItsPay.png" style="width: 85px; margin: 0 auto;" />
-                </div>
+                <button class="btn btn-success" onclick="javascript: pay();" type="button">Já Paguei!</button><br>
             </div>
         </div>
     </div>
@@ -111,7 +105,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
     <div class="container">
         <div class="row">
             <div class="col-md-6 justify-content-center">
-                <img class="card-img-top" src="<?=$https.$_SERVER['HTTP_HOST']?>/assets/img/mobiup.png" alt="..." />
+                <img class="card-img-top img-imob" src="" alt="..." />
                 <div class="accordion" id="accordionPanelsStayOpenExample">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -120,7 +114,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
                             </button>
                         </h2>
                         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-                            <div class="accordion-body">
+                            <div class="accordion-body desc-imob">
                                 Leilão de NFTs imobiliários.
                             </div>
                         </div>
@@ -137,7 +131,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
                                     <thead>
                                         <tr>
                                             <th scope="col">Contrato</th>
-                                            <th scope="col" style="text-align: right;">0x6e6bf4....4065</th>
+                                            <th scope="col" style="text-align: right;" class="contrato-ativo">0x6e6bf4....4065</th>
                                         </tr>
                                         <tr>
                                             <th scope="col">Tipo do Token</th>
@@ -156,15 +150,15 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
             </div>
             <input type="hidden" id="idToken" value="<?=$this->id?>" />
             <div class="col-md-6 justify-content-center">
-                <h3 style="text-align: center;">Token <?=$this->id?></h3>
+                <h3 class="titulo-imob" style="text-align: center;">Token <?=$this->id?></h3>
                 <div class="card">
                     <div class="card-header">
                         O leilão está Ativo!
                     </div>
                     <div class="card-body text-center">
-                        <h5 class="card-title">Leilão Token <?=$this->id?></h5>
+                        <h5 class="card-title titulo-imob">Leilão Token <?=$this->id?></h5>
                         <p class="card-text">Faça seu lance e aguarde o leilão terminar.</p>
-                        <p class="card-text">Seu lance será de R$ 10,00 à mais do lance atual.</p>
+                        <p class="card-text">Seu lance será de R$ 1.000,00 à mais do que o lance atual.</p>
                         <a href="#" class="btn btn-primary" id="btn-lance" onclick="lance();">Dar Lance</a>
                         <p id="end-auction-text" class="card-text text-warning"></p>
                         <p id="end-auction-text-winner" class="card-text text-success"></p>
@@ -192,7 +186,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
 </section>
 <!-- Footer-->
 <footer class="py-5 bg-dark">
-    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Mobiup 2022</p></div>
+    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; 2022</p></div>
 </footer>
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
@@ -202,6 +196,7 @@ if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
 <script>
     setTimeout(() => {
         dataInfoCollection();
+        infoTokenSingle();
     }, 1000);
 </script>
 </body>
